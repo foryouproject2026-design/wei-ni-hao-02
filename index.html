@@ -364,8 +364,12 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       const t=tiles[i],b=bubbleScene[t.carrier];
       const diagonal=clamp(.5+t.px/artWidth*.45-t.py/artHeight*.45);
       const stagger=entering?1-diagonal:diagonal;
-      const fold=smooth(stagger*.065,.94+stagger*.055,amount);
-      const bend=smooth(.02,.96,fold);
+      // One reversible material clock: inflate, bend, draw out, then settle.
+      // Spatial delays follow connected strokes and end at the same membrane.
+      const fold=smooth(stagger*.12,.86+stagger*.14,amount);
+      const inflate=smooth(0,.30,fold)*(1-smooth(.46,.88,fold));
+      const bend=smooth(.12,.86,fold);
+      const transport=smooth(.22,.94,fold);
       const theta=t.theta+b.slip+b.rotation;
       // A common membrane radius, without per-section jitter, joins the ink
       // into continuous curved menisci instead of thousands of short lines.
@@ -402,9 +406,16 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
         skinY+=n.weight*dy*lens*.50;
         skinTilt+=n.weight*(-2*dx*dy/(reach*reach))*lens*.50;
       }
-      const adhesion=1-smooth(.20,.98,fold);
-      const x=mix(carriedX,tx,fold)+warpX*softness*.30+skinX*adhesion;
-      const y=mix(carriedY,ty,fold)+warpY*softness*.30+skinY*adhesion;
+      const adhesion=smooth(0,.20,fold)*(1-smooth(.45,.98,fold));
+      // Shared liquid currents add an unfolding shoulder and a gentle second
+      // bend as the same material pulls free, then settles into the final ink.
+      const unfold=entering?Math.sin(Math.PI*fold)**2:0;
+      const currentAngle=Math.atan2(t.py/artHeight,t.px/artWidth);
+      const shoulder=unfold*artWidth*.026*Math.sin(fold*TAU+currentAngle);
+      const x=mix(carriedX,tx,transport)+warpX*softness*.30+skinX*adhesion
+        +Math.cos(currentAngle+Math.PI/2)*shoulder;
+      const y=mix(carriedY,ty,transport)+warpY*softness*.30+skinY*adhesion
+        +Math.sin(currentAngle+Math.PI/2)*shoulder;
       // Select real moving ink positions: bubbles remain welded to the strokes.
       if(i%7===0){
         const radius=artWidth*(.005+rand(i,4311)*.009);
@@ -415,12 +426,32 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       const surfaceTangent=Math.atan2(post.y-pre.y,post.x-pre.x);
       const tangent=((surfaceTangent+Math.PI*2.5)%Math.PI)-Math.PI/2;
       const length=mix(t.length*.5+t.thickness*.35,Math.max(2.5,shell*.36),bend)*(1+softness*stretchX*.6);
-      const thickness=mix(t.thickness*.98,Math.max(.40,shell*.017),bend)*(1+softness*(.38+stretchY*.55));
-      // Rounded ink lobes share one density field and weld at contact.
-      liquidCtx.beginPath();liquidCtx.ellipse(x,y,length,thickness,tangent*bend+shear*softness*.24+skinTilt*adhesion,0,TAU);liquidCtx.fill();
+      const thickness=mix(t.thickness*.98,Math.max(.40,shell*.017),bend)*(1+inflate*.72+softness*stretchY*.35);
+      // Transport a continuous ribbon. Its centreline gradually acquires the
+      // actual bubble curvature, so the intermediate ink has visible bent lips.
+      const tilt=tangent*bend+shear*softness*.24+skinTilt*adhesion;
+      const co=Math.cos(tilt),si=Math.sin(tilt);
+      const surfaceCo=Math.cos(tangent),surfaceSi=Math.sin(tangent);
+      const halfArc=Math.min(.66,length/Math.max(1,b.r));
+      const wrap=smooth(.28,.98,fold),segments=12;
+      const points=[];
+      for(let k=0;k<=segments;k++){
+        const u=k/segments*2-1;
+        // Align the arc to the same tangent orientation as the original stroke.
+        const orientation=surfaceCo*(post.x-pre.x)+surfaceSi*(post.y-pre.y)>=0?1:-1;
+        const arc=bubbleSurface(b,theta+halfArc*u*orientation,.978);
+        const bulge=Math.sin(Math.PI*fold)*inflate*length*.19*(1-u*u);
+        points.push({x:x+mix(u*length*co,arc.x-tx,wrap)-si*bulge,
+          y:y+mix(u*length*si,arc.y-ty,wrap)+co*bulge});
+      }
+      liquidCtx.lineCap='round';liquidCtx.lineJoin='round';
+      liquidCtx.strokeStyle='#fff';liquidCtx.lineWidth=thickness*2;
+      liquidCtx.beginPath();liquidCtx.moveTo(points[0].x,points[0].y);
+      for(let k=1;k<points.length;k++)liquidCtx.lineTo(points[k].x,points[k].y);
+      liquidCtx.stroke();
     }
     fusedCtx.setTransform(1,0,0,1,0,0);fusedCtx.clearRect(0,0,pw,ph);
-    fusedCtx.filter=`blur(${mix(1.65,.48,smooth(.15,.96,amount))}px)`;fusedCtx.drawImage(liquidCanvas,0,0);fusedCtx.filter='none';
+    fusedCtx.filter='blur(.85px)';fusedCtx.drawImage(liquidCanvas,0,0);fusedCtx.filter='none';
     const surface=fusedCtx.getImageData(0,0,pw,ph),pixels=surface.data;
     // Distance to the ink boundary defines a rounded, inflated stroke surface.
     const membrane=smooth(.08,.98,amount);
@@ -442,7 +473,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       reliefHeight[j]=Math.sqrt(Math.max(0,u*(2-u)))*roundness*1.55;
     }
     for(let y=1;y<ph-1;y++)for(let x=1;x<pw-1;x++){
-      const j=y*pw+x,i=j*4,edge=smooth(18,mix(130,90,membrane),alpha[j]);
+      const j=y*pw+x,i=j*4,edge=smooth(18,112,alpha[j]);
       if(!edge){pixels[i+3]=0;continue;}
       let nx=-(reliefHeight[j+1]-reliefHeight[j-1])*.72;
       let ny=-(reliefHeight[j+pw]-reliefHeight[j-pw])*.72;
@@ -455,13 +486,13 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       // Transparent dark centres, bright curved lips, and tight wet highlights.
       const value=clamp(.22+diffuse*.49+spec*1.15+rim*.42+bounce*.34);
       pixels[i]=Math.round(value*244);pixels[i+1]=Math.round(value*250);pixels[i+2]=Math.round(value*255);
-      pixels[i+3]=Math.round(edge*edge*(3-2*edge)*(185+rim*50+spec*20)*mix(1,.44,membrane));
+      pixels[i+3]=Math.round(edge*edge*(3-2*edge)*(185+rim*50+spec*20));
     }
     fusedCtx.putImageData(surface,0,0);
     fusedCtx.save();
     fusedCtx.setTransform(ratio,0,0,ratio,-left*ratio,-top*ratio);
     fusedCtx.globalCompositeOperation='source-atop';
-    fusedCtx.globalAlpha=mix(1,.20,membrane);
+    fusedCtx.globalAlpha=.50;
     // Larger soft lobes and dimples break up the tube into a living bubble skin.
     for(let k=0;k<textBubbleAnchors.length;k+=3){
       const a=textBubbleAnchors[k],r=a.r*2.3;
@@ -748,7 +779,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     const placed=[];
     for(const a of textBubbleAnchors){
       if(!a.large||placed.length>=13)continue;
-      const r=artWidth*(.029+rand(a.seed,4312)*.027);
+      const r=artWidth*(.029+rand(a.seed,4312)*.027)*mix(.26,1,smooth(.06,.70,a.fold));
       if(placed.some(b=>Math.hypot(b.x-a.x,b.y-a.y)<r*2.3))continue;
       placed.push(a);
       drawBubble({x:a.x+r*.23,y:a.y-r*.16,r,rotation:a.rotation,
@@ -766,7 +797,13 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     const sorted=[...bubbleScene].sort((a,b)=>a.depth-b.depth);
     sorted.forEach(b=>drawBubble(b));
     const outgoing=phase<=90;
-    const amount=outgoing?smooth(10,90,phase):1-smooth(90,170,phase);
+    // A broad, nearly linear clock leaves room to see every material stage.
+    const progress=outgoing?clamp((phase-6)/82):clamp((phase-90)/89);
+    // Incoming ink remains curved longer; it finishes only near 179 degrees.
+    // The smooth endpoints keep both the membrane handoff and final join quiet.
+    const incomingClock=smooth(0,1,progress);
+    const amount=outgoing?mix(progress,smooth(0,1,progress),.28)
+      :Math.pow(1-incomingClock,.78);
     drawStrokes(outgoing?leg:1-leg,amount,!outgoing);
     // Near membranes bend across the transported ink; no alpha animation.
     for(const b of sorted)if(b.depth>.50)drawBubble(b,true);
@@ -783,10 +820,12 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
   }
   function stage(p){
     const phase=(p*360)%180;
-    if(phase<25||phase>=155)return '01 / 文字完整成形';
-    if(phase<80)return '02 / 泡泡吞入筆畫';
-    if(phase<100)return '03 / 泡泡推擠與重排';
-    return '04 / 筆畫從接縫長出';
+    const d=Math.min(phase,180-phase),outgoing=phase<=90;
+    if(d<6)return '01 / 文字完整成形';
+    if(d<28)return outgoing?'02 / 筆畫膨起・邊緣軟化':'06 / 筆畫接合・輪廓收定';
+    if(d<51)return outgoing?'03 / 筆畫彎曲・薄膜拉伸':'05 / 薄膜收攏・筆畫接合';
+    if(d<73)return outgoing?'04 / 沿泡壁展開・融入薄膜':'04 / 泡壁牽出・筆畫生長';
+    return '03 / 泡泡推擠與重排';
   }
 
   function updateUI() {
@@ -829,7 +868,12 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
         // Slow the departure from each sentence, then ease back to normal speed.
         const departure=cycle(target*direction)%180;
         const breakupRate=mix(.5,1,smooth(15,25,departure));
-        const next=target+dt*30*filteredPlaybackRate*breakupRate*direction;
+        const phase=cycle(target)%180;
+        const forming=direction>0?phase>=90:phase<=90;
+        const remaining=direction>0?180-phase:phase;
+        const formationRate=mix(.72,1,smooth(2,24,remaining));
+        const speed=forming?6*formationRate:18;
+        const next=target+dt*speed*filteredPlaybackRate*breakupRate*direction;
         if(direction>0?next>=boundary:next<=boundary){
           target=boundary;current=boundary;vel=0;
           textHoldRemaining=TEXT_HOLD_SECONDS;
@@ -973,7 +1017,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
   Object.assign(UI,{title:'為你好 / 選擇',subtitle:'轉到 180° 顯示第二句，360° 回到第一句。',gyro:'啟用旋轉感應',gyroOff:'停用旋轉感應',ready:'左右拖曳或滑動角度，轉動話語。',manualHelp:'左右拖曳或使用滑桿；反向操作可逐步還原。',paused:'預覽已暫停，泡泡停留在目前角度。'});
   document.querySelectorAll('[data-label]').forEach(el=>el.textContent=UI[el.dataset.label]||'');
   $('sourceText').textContent='';$('targetText').textContent='';
-  document.title='文字自然融入透明泡泡';
+  document.title='泡泡｜慢慢牽出文字';
   document.querySelector('.brand').innerHTML='FOR YOUR OWN GOOD<br>CELLULAR MEMBRANE / 泡泡薄膜翻滾';
   canvas.setAttribute('aria-label','白色圓形粒子組成的選擇情境，拖曳可改變角度');
   $('scrub').setAttribute('aria-label','旋轉角度 0 至 360 度');
