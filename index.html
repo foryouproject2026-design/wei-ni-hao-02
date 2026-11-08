@@ -364,13 +364,13 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       const t=tiles[i],b=bubbleScene[t.carrier];
       const diagonal=clamp(.5+t.px/artWidth*.45-t.py/artHeight*.45);
       const stagger=entering?1-diagonal:diagonal;
-      const fold=smooth(stagger*.12,.90+stagger*.09,amount);
+      const fold=smooth(stagger*.065,.94+stagger*.055,amount);
       const bend=smooth(.02,.96,fold);
       const theta=t.theta+b.slip+b.rotation;
       // A common membrane radius, without per-section jitter, joins the ink
       // into continuous curved menisci instead of thousands of short lines.
       const shell=b.r*.86;
-      const membrane=bubbleSurface(b,theta,.89),tx=membrane.x,ty=membrane.y;
+      const membrane=bubbleSurface(b,theta,.978),tx=membrane.x,ty=membrane.y;
       const softness=Math.sin(Math.PI*fold);
       let warpX=0,warpY=0,stretchX=0,stretchY=0,shear=0;
       // A smooth lens field bends WHOLE connected strokes before the material
@@ -386,39 +386,44 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       }
       // Ink wraps along a curved inward current instead of travelling on
       // straight spokes. The whole material remains attached to its membrane.
-      const curl=softness*(.52+b.slip*.18),ca=Math.cos(curl),sa=Math.sin(curl);
+      const curl=softness*(.28+b.slip*.10),ca=Math.cos(curl),sa=Math.sin(curl);
       const sx=cx+t.px-b.x,sy=cy+t.py-b.y;
       const carriedX=b.x+sx*ca-sy*sa,carriedY=b.y+sx*sa+sy*ca;
-      // Shared continuous spherical lens field bends connected ink across the skin.
-      let lensX=0,lensY=0;
+      // A shared spherical lens field bends whole strokes; neighbouring tiles
+      // follow the same surface so readable letters never break into loose beads.
+      let skinX=0,skinY=0,skinTilt=0;
       for(const n of t.neighbours){
         const seed=bubbleSeeds[n.index];
         const dx=t.px-seed.bx,dy=t.py-seed.by;
-        const reach=Math.max(seed.radius*2.2,artWidth*.065);
-        const lens=Math.exp(-(dx*dx+dy*dy)/(reach*reach));
-        lensX+=dx*lens*n.weight*.23;
-        lensY+=dy*lens*n.weight*.23;
+        const reach=Math.max(seed.radius*2.5,artWidth*.10);
+        const q=(dx*dx+dy*dy)/(reach*reach);
+        const lens=Math.exp(-q);
+        skinX+=n.weight*dx*lens*.50;
+        skinY+=n.weight*dy*lens*.50;
+        skinTilt+=n.weight*(-2*dx*dy/(reach*reach))*lens*.50;
       }
-      const x=mix(carriedX,tx,fold)+warpX*softness*.55+lensX*(1-fold);
-      const y=mix(carriedY,ty,fold)+warpY*softness*.55+lensY*(1-fold);
+      const adhesion=1-smooth(.20,.98,fold);
+      const x=mix(carriedX,tx,fold)+warpX*softness*.30+skinX*adhesion;
+      const y=mix(carriedY,ty,fold)+warpY*softness*.30+skinY*adhesion;
       // Select real moving ink positions: bubbles remain welded to the strokes.
       if(i%7===0){
         const radius=artWidth*(.005+rand(i,4311)*.009);
         textBubbleAnchors.push({x,y,r:radius,rotation:b.rotation,
           seed:i,fold,large:i%119===0});
       }
-      const pre=bubbleSurface(b,theta-.02,.89),post=bubbleSurface(b,theta+.02,.89);
+      const pre=bubbleSurface(b,theta-.02,.978),post=bubbleSurface(b,theta+.02,.978);
       const surfaceTangent=Math.atan2(post.y-pre.y,post.x-pre.x);
       const tangent=((surfaceTangent+Math.PI*2.5)%Math.PI)-Math.PI/2;
-      const length=mix(t.length*.5+t.thickness*.35,Math.max(2.5,shell*.28),bend)*(1+softness*stretchX*.6);
-      const thickness=mix(t.thickness*.98,Math.max(.90,shell*.055),bend)*(1+softness*(.38+stretchY*.55));
+      const length=mix(t.length*.5+t.thickness*.35,Math.max(2.5,shell*.36),bend)*(1+softness*stretchX*.6);
+      const thickness=mix(t.thickness*.98,Math.max(.40,shell*.017),bend)*(1+softness*(.38+stretchY*.55));
       // Rounded ink lobes share one density field and weld at contact.
-      liquidCtx.beginPath();liquidCtx.ellipse(x,y,length,thickness,tangent*bend+shear*softness*.24,0,TAU);liquidCtx.fill();
+      liquidCtx.beginPath();liquidCtx.ellipse(x,y,length,thickness,tangent*bend+shear*softness*.24+skinTilt*adhesion,0,TAU);liquidCtx.fill();
     }
     fusedCtx.setTransform(1,0,0,1,0,0);fusedCtx.clearRect(0,0,pw,ph);
-    fusedCtx.filter='blur(1.65px)';fusedCtx.drawImage(liquidCanvas,0,0);fusedCtx.filter='none';
+    fusedCtx.filter=`blur(${mix(1.65,.48,smooth(.15,.96,amount))}px)`;fusedCtx.drawImage(liquidCanvas,0,0);fusedCtx.filter='none';
     const surface=fusedCtx.getImageData(0,0,pw,ph),pixels=surface.data;
     // Distance to the ink boundary defines a rounded, inflated stroke surface.
+    const membrane=smooth(.08,.98,amount);
     const total=pw*ph,dist=new Float32Array(total),alpha=new Uint8ClampedArray(total);
     for(let j=0;j<total;j++){
       alpha[j]=pixels[j*4+3];dist[j]=alpha[j]>85?1000:0;
@@ -437,7 +442,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       reliefHeight[j]=Math.sqrt(Math.max(0,u*(2-u)))*roundness*1.55;
     }
     for(let y=1;y<ph-1;y++)for(let x=1;x<pw-1;x++){
-      const j=y*pw+x,i=j*4,edge=clamp((alpha[j]-70)/64);
+      const j=y*pw+x,i=j*4,edge=smooth(18,mix(130,90,membrane),alpha[j]);
       if(!edge){pixels[i+3]=0;continue;}
       let nx=-(reliefHeight[j+1]-reliefHeight[j-1])*.72;
       let ny=-(reliefHeight[j+pw]-reliefHeight[j-pw])*.72;
@@ -450,12 +455,13 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       // Transparent dark centres, bright curved lips, and tight wet highlights.
       const value=clamp(.22+diffuse*.49+spec*1.15+rim*.42+bounce*.34);
       pixels[i]=Math.round(value*244);pixels[i+1]=Math.round(value*250);pixels[i+2]=Math.round(value*255);
-      pixels[i+3]=Math.round(edge*edge*(3-2*edge)*(185+rim*50+spec*20));
+      pixels[i+3]=Math.round(edge*edge*(3-2*edge)*(185+rim*50+spec*20)*mix(1,.44,membrane));
     }
     fusedCtx.putImageData(surface,0,0);
     fusedCtx.save();
     fusedCtx.setTransform(ratio,0,0,ratio,-left*ratio,-top*ratio);
     fusedCtx.globalCompositeOperation='source-atop';
+    fusedCtx.globalAlpha=mix(1,.20,membrane);
     // Larger soft lobes and dimples break up the tube into a living bubble skin.
     for(let k=0;k<textBubbleAnchors.length;k+=3){
       const a=textBubbleAnchors[k],r=a.r*2.3;
@@ -741,8 +747,8 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     // The same clear spherical skin is used for the bubbles attached to ink.
     const placed=[];
     for(const a of textBubbleAnchors){
-      if(!a.large||placed.length>=11)continue;
-      const r=artWidth*(.048+rand(a.seed,4312)*.033);
+      if(!a.large||placed.length>=13)continue;
+      const r=artWidth*(.029+rand(a.seed,4312)*.027);
       if(placed.some(b=>Math.hypot(b.x-a.x,b.y-a.y)<r*2.3))continue;
       placed.push(a);
       drawBubble({x:a.x+r*.23,y:a.y-r*.16,r,rotation:a.rotation,
@@ -760,7 +766,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     const sorted=[...bubbleScene].sort((a,b)=>a.depth-b.depth);
     sorted.forEach(b=>drawBubble(b));
     const outgoing=phase<=90;
-    const amount=outgoing?clamp((phase-23)/63):clamp((157-phase)/63);
+    const amount=outgoing?smooth(10,90,phase):1-smooth(90,170,phase);
     drawStrokes(outgoing?leg:1-leg,amount,!outgoing);
     // Near membranes bend across the transported ink; no alpha animation.
     for(const b of sorted)if(b.depth>.50)drawBubble(b,true);
@@ -967,7 +973,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
   Object.assign(UI,{title:'為你好 / 選擇',subtitle:'轉到 180° 顯示第二句，360° 回到第一句。',gyro:'啟用旋轉感應',gyroOff:'停用旋轉感應',ready:'左右拖曳或滑動角度，轉動話語。',manualHelp:'左右拖曳或使用滑桿；反向操作可逐步還原。',paused:'預覽已暫停，泡泡停留在目前角度。'});
   document.querySelectorAll('[data-label]').forEach(el=>el.textContent=UI[el.dataset.label]||'');
   $('sourceText').textContent='';$('targetText').textContent='';
-  document.title='透明球膜貼字｜為你好／選擇';
+  document.title='文字自然融入透明泡泡';
   document.querySelector('.brand').innerHTML='FOR YOUR OWN GOOD<br>CELLULAR MEMBRANE / 泡泡薄膜翻滾';
   canvas.setAttribute('aria-label','白色圓形粒子組成的選擇情境，拖曳可改變角度');
   $('scrub').setAttribute('aria-label','旋轉角度 0 至 360 度');
