@@ -184,13 +184,22 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     reach:.24+rand(i,833)*.27,phase:rand(i,834)*TAU,
     strength:(.48+rand(i,835)*.52)*(rand(i,836)>.5?1:-1)
   }));
+  const wavePhases=new Map(),waveValues=new Map();
+  let waveClock=NaN;
   function organicWave(p,key){
+    if(p!==waveClock){waveValues.clear();waveClock=p;}
+    if(waveValues.has(key))return waveValues.get(key);
+    let phases=wavePhases.get(key);
+    if(!phases){
+      phases=Array.from({length:3},(_,i)=>{const phase=rand(key,841+i)*TAU;return [phase,Math.sin(phase)];});
+      wavePhases.set(key,phases);
+    }
     let value=0;
     for(let h=1;h<=3;h++){
-      const phase=rand(key,840+h)*TAU,weight=h===1?.77:h===2?.195:.035;
-      value+=weight*(Math.sin(p*h+phase)-Math.sin(phase));
+      const [phase,base]=phases[h-1],weight=h===1?.77:h===2?.195:.035;
+      value+=weight*(Math.sin(p*h+phase)-base);
     }
-    return value;
+    waveValues.set(key,value);return value;
   }
   function bubbleGeometry(angle){
     const p=cycle(angle)*DEG,travel=p*4,pressure=Math.sin(p)**2;
@@ -347,7 +356,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
   // Blur + a FIXED density boundary is spatial smoothing, never an opacity tween.
   const liquidCanvas=document.createElement('canvas'),liquidCtx=liquidCanvas.getContext('2d');
   const fusedCanvas=document.createElement('canvas'),fusedCtx=fusedCanvas.getContext('2d',{willReadFrequently:true});
-  let textBubbleAnchors=[];
+  let textBubbleAnchors=[],lensScratch=new Uint8ClampedArray(0);
   function drawStrokes(which,amount,entering=false){
     textBubbleAnchors=[];
     // Readable and deformed ink are rendered as the same foamy material.
@@ -498,12 +507,25 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     const frontLenses=bubbleScene.filter(b=>b.depth>.12&&b.r>artWidth*.030)
       .sort((a,b)=>a.depth-b.depth);
     for(const b of frontLenses){
-      const source=new Uint8ClampedArray(pixels);
+      if(lensScratch.length!==pixels.length)lensScratch=new Uint8ClampedArray(pixels.length);
+      const source=lensScratch;
       const reach=b.r*Math.max(b.squeeze,1/b.squeeze)*1.10;
       const x0=Math.max(1,Math.floor((b.x-reach-left)*ratio));
       const x1=Math.min(pw-2,Math.ceil((b.x+reach-left)*ratio));
       const y0=Math.max(1,Math.floor((b.y-reach-top)*ratio));
       const y1=Math.min(ph-2,Math.ceil((b.y+reach-top)*ratio));
+      // Copy only the region touched by this lens, including interpolation padding.
+      const pad=Math.ceil(b.r*ratio*.05)+3;
+      const copyLeft=Math.max(0,x0-pad),copyRight=Math.min(pw,x1+pad+2);
+      for(let row=Math.max(0,y0-pad);row<=Math.min(ph-1,y1+pad+1);row++){
+        const start=(row*pw+copyLeft)*4,end=(row*pw+copyRight)*4;
+        source.set(pixels.subarray(start,end),start);
+      }
+      const contourRadii=new Float32Array(129);
+      for(let k=0;k<=128;k++){
+        const point=bubbleSurface(b,k/128*TAU);
+        contourRadii[k]=Math.hypot(point.x-b.x,point.y-b.y);
+      }
       const cr=Math.cos(b.rotation),sr=Math.sin(b.rotation);
       for(let yy=y0;yy<=y1;yy++)for(let xx=x0;xx<=x1;xx++){
         const wx=left+xx/ratio,wy=top+yy/ratio;
@@ -512,8 +534,9 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
         const uy=(-dx*sr+dy*cr)/b.squeeze;
         const q=(ux*ux+uy*uy)/(b.r*b.r);
         if(q>=1)continue;
-        const shell=bubbleSurface(b,Math.atan2(uy,ux));
-        const extent=Math.hypot(shell.x-b.x,shell.y-b.y);
+        const angleIndex=((Math.atan2(uy,ux)+TAU)%TAU)/TAU*128;
+        const angleFloor=Math.floor(angleIndex);
+        const extent=mix(contourRadii[angleFloor],contourRadii[angleFloor+1],angleIndex-angleFloor);
         if(Math.hypot(dx,dy)>extent)continue;
         const weight=1-smooth(.76,1,q);
         const lens=1-.22*(1-q);
