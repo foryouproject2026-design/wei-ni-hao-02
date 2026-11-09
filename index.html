@@ -63,6 +63,8 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
   const materialCanvas=document.createElement('canvas'),ink=materialCanvas.getContext('2d');
   if (!ctx) { $('status').textContent = UI.noCanvas; return; }
   const TAU = Math.PI * 2, DEG = Math.PI / 180;
+  const mobileRendering=matchMedia('(pointer:coarse)').matches||Math.min(screen.width,screen.height)<700;
+  let lastMobileFrame=-Infinity;
   const clamp = (x,a=0,b=1) => Math.min(b,Math.max(a,x));
   function smooth(a,b,x) { const t=clamp((x-a)/(b-a)); return clamp(t*t*t*(t*(t*6-15)+10)); }
   const count = 2;
@@ -132,7 +134,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     artHeight=Math.max(70,Math.min(bottom-top-20,W*.95,420));
     artWidth=artHeight*2/3;scale=artWidth/3.2;
     // A cellular torus carries the open cavities through an actual 3-D roll.
-    bubbleSeeds=Array.from({length:260},(_,i)=>{
+    bubbleSeeds=Array.from({length:mobileRendering?150:260},(_,i)=>{
       const theta=i*2.399963229728653, phi=rand(i,612)*TAU;
       const tube=.135+.045*Math.sin(theta*3+.7);
       const ring=.34+tube*Math.cos(phi);
@@ -150,7 +152,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       // a membrane arc in the middle. No alpha, threshold, or disappearing tile.
       for(let y=1;y<660;y+=3)for(let x=0;x<440;){
         if(data[(y*440+x)*4+3]<100){x++;continue;}
-        const first=x;while(x<440&&x-first<9&&data[(y*440+x)*4+3]>=100)x++;
+        const first=x;while(x<440&&x-first<(mobileRendering?14:9)&&data[(y*440+x)*4+3]>=100)x++;
         const px=((first+x)/2-220)/440*artWidth*sign,py=(y-330)/660*artHeight*sign;
         const nearby=bubbleSeeds.map((b,index)=>({index,d:(px-b.bx)**2+(py-b.by)**2})).sort((a,b)=>a.d-b.d).slice(0,4);
         const weights=nearby.map(n=>1/(n.d+artWidth*artWidth*.009));
@@ -245,7 +247,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     }
     // Soft contacts redistribute local pressure, without expanding the cloud
     // or introducing history-dependent physics that would break reverse scrubbing.
-    for(let pass=0;pass<5;pass++)for(let i=0;i<scene.length;i++)for(let j=i+1;j<scene.length;j++){
+    for(let pass=0;pass<(mobileRendering?2:5);pass++)for(let i=0;i<scene.length;i++)for(let j=i+1;j<scene.length;j++){
       const a=scene[i],b=scene[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy);
       const separation=(a.r+b.r)*(.74+.09*rand(i+j,2821));
       if(d>0&&d<separation){
@@ -290,7 +292,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     return {x:b.x+vx*radius*radial,y:b.y+vy*radius*radial};
   }
   function bubbleContour(b,radial=1,start=0,end=TAU){
-    const steps=Math.max(10,Math.ceil((end-start)*9)),points=[];
+    const steps=Math.max(10,Math.ceil((end-start)*(mobileRendering?6:9))),points=[];
     const closed=end-start>TAU-.01;
     for(let i=0;i<(closed?steps:steps+1);i++)points.push(bubbleSurface(b,start+(end-start)*i/steps,radial));
     ctx.beginPath();
@@ -360,7 +362,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
   function drawStrokes(which,amount,entering=false){
     textBubbleAnchors=[];
     // Readable and deformed ink are rendered as the same foamy material.
-    const tiles=strokeTiles[which],ratio=1.25;
+    const tiles=strokeTiles[which],ratio=mobileRendering?.85:1.25;
     const width=Math.ceil(artWidth*1.95),height=Math.ceil(artHeight*1.65);
     const left=cx-width/2,top=cy-height/2;
     const pw=Math.ceil(width*ratio),ph=Math.ceil(height*ratio);
@@ -442,7 +444,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       const co=Math.cos(tilt),si=Math.sin(tilt);
       const surfaceCo=Math.cos(tangent),surfaceSi=Math.sin(tangent);
       const halfArc=Math.min(.66,length/Math.max(1,b.r));
-      const wrap=smooth(.28,.98,fold),segments=12;
+      const wrap=smooth(.28,.98,fold),segments=mobileRendering?6:12;
       const points=[];
       for(let k=0;k<=segments;k++){
         const u=k/segments*2-1;
@@ -504,7 +506,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     }
     // Refract the actual text layer through the same curved front membranes.
     // Each inverse lens preserves the outline at its boundary and enlarges the centre.
-    const frontLenses=bubbleScene.filter(b=>b.depth>.12&&b.r>artWidth*.030)
+    const frontLenses=bubbleScene.filter(b=>b.depth>.12&&b.r>artWidth*(mobileRendering?.050:.030))
       .sort((a,b)=>a.depth-b.depth);
     for(const b of frontLenses){
       if(lensScratch.length!==pixels.length)lensScratch=new Uint8ClampedArray(pixels.length);
@@ -869,7 +871,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
   }
   const paint=render;
   function resize(){
-    W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);
+    W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,mobileRendering?1.35:2);
     canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);
     canvas.style.width=W+'px';canvas.style.height=H+'px';
     if(ready){huntPaths=[null,null];mesoPlans=[null,null];rebuild();lastPaint=NaN;paint(current);}
@@ -913,7 +915,10 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     say(UI.previewHelp);updateUI();
   }
   function tick(now) {
-    const dt=Math.min(.04,Math.max(0,(now-last)/1000));last=now;
+    // Process the newest accumulated sensor pose at a steady mobile frame cadence.
+    if(mobileRendering&&now-lastMobileFrame<32){requestAnimationFrame(tick);return;}
+    lastMobileFrame=now;
+    const dt=Math.min(.08,Math.max(0,(now-last)/1000));last=now;
     if(auto) {
       // Match visible pursuit movement to the preceding roaming speed.
       filteredPlaybackRate=mix(filteredPlaybackRate,pursuitPlaybackRate*(1-.3*smooth(25,45,Math.min(cycle(current)%180,180-cycle(current)%180))),1-Math.exp(-14*dt));
@@ -943,7 +948,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       const textAngle=Math.round(target/180)*180;
       if(sensorTextAnchor!==null&&Math.abs(target-sensorTextAnchor)>3)sensorTextAnchor=null;
       if(sensorTextAnchor===null&&Math.abs(target-textAngle)<=1.5)sensorTextAnchor=textAngle;
-      current=sensorTextAnchor!==null?sensorTextAnchor:mix(current,target,1-Math.exp(-dt/.055));
+      current=sensorTextAnchor!==null?sensorTextAnchor:mix(current,target,1-Math.exp(-dt/(mobileRendering?.085:.055)));
       vel=0;
       if(sensorTextAnchor===null&&Math.abs(current-target)<.025)current=target;
     }
