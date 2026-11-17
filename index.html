@@ -246,7 +246,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
   }
   let movingOccluders=[];
   function movingFoam(angle,t){
-    const result=[],leg=Math.floor(angle/180),travel=(H+scale*7)/180;
+    const result=[],leg=Math.floor(angle/180),travel=(H+scale*7)/260;
     for(let k=leg-1;k<=leg+1;k++)for(let cell=0;cell<6;cell++){
       const phase=angle-k*180,middle=88+(cell%3)*3;
       const carrier=carriers[cell];
@@ -262,51 +262,63 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     return result;
   }
   const liquidLayers=Array.from({length:6},()=>{
-    const canvas=document.createElement('canvas');canvas.width=canvas.height=256;
+    const canvas=document.createElement('canvas');canvas.width=canvas.height=384;
     return {canvas,ctx:canvas.getContext('2d')};
   });
+  function stretchedY(y,front,amount){
+    const lo=Math.tanh(-front/32),hi=Math.tanh((192-front)/32);
+    return y+amount*22*(Math.tanh((y-front)/32)-lo-(hi-lo)*y/192);
+  }
   function drawInk(b){
     const size=scale*1.24,leg=Math.floor(current/180),phase=current-leg*180;
-    const middle=88+(b.id%3)*3,front=-(phase-middle)*(H+scale*7)/180;
-    const band=Math.max(1.5,size/64),feather=scale*.18;
-    // The rising film reveals the new sentence behind its lower edge.
-    // Both glyphs use the same mask, so no narrow flip or abrupt whole-letter swap occurs.
-    ctx.save();ctx.translate(b.x,b.y);ctx.rotate(b.turn);
-    if(Math.abs(front)>size/2+feather*2.4){
-      const which=((leg+(front<0?1:0))%2+2)%2,index=which?5-b.id:b.id;
-      if(which)ctx.rotate(Math.PI);
-      ctx.drawImage(glyphs[which][index],-size/2,-size/2,size,size);
-      ctx.restore();return;
-    }
+    const middle=88+(b.id%3)*3,front=-(phase-middle)*(H+scale*7)/260;
+    const contactAmount=Math.exp(-Math.pow(front/(scale*.95),2));
     const layer=liquidLayers[b.id],g=layer.ctx;
-    g.clearRect(0,0,256,256);
-    const contactAmount=Math.exp(-Math.pow(front/(scale*.75),2));
-    // Warp into integer pixel rows first, then resample the complete image once.
-    // This keeps connected liquid strokes free of the old horizontal seams.
-    for(let sy=0;sy<192;sy+=2){
-      const v=((sy+1)/192-.5)*size;
-      const reveal=smooth(front-feather,front+feather,v);
-      const contact=Math.exp(-Math.pow((v-front)/(scale*.46),2));
-      const wave=Math.sin(v/scale*7+phase*.10+b.id*1.7);
-      const shift=contact*(14*wave+5*Math.sin(v/scale*14-phase*.07));
-      const stretch=1+contact*(.16*wave+.06*Math.cos(v/scale*12+b.id));
-      for(let side=0;side<2;side++){
-        const alpha=side?reveal:1-reveal;if(alpha<.001)continue;
-        const which=((leg+side)%2+2)%2,index=which?5-b.id:b.id;
-        g.save();g.globalAlpha=alpha;g.translate(128+shift,32+sy+1);g.scale(stretch,1);
-        if(which){g.scale(-1,-1);g.drawImage(glyphs[which][index],0,190-sy,192,2,-96,-1,192,2);}
-        else g.drawImage(glyphs[which][index],0,sy,192,2,-96,-1,192,2);
-        g.restore();
-      }
+    g.clearRect(0,0,384,384);g.globalAlpha=1;
+    const seam=front+Math.sin(phase*.10+b.id*1.7)*scale*.025;
+    const frontPx=96+front*192/size;
+    for(let sy=0;sy<192;sy++){
+      const v=((sy+.5)/192-.5)*size;
+      const side=v>=seam?1:0;
+      const which=((leg+side)%2+2)%2,index=which?5-b.id:b.id;
+      const contact=Math.exp(-Math.pow((v-front)/(scale*.7),2));
+      const wave=Math.sin(v/scale*5+phase*.10+b.id*1.7);
+      const shift=contact*(38*wave+12*Math.sin(v/scale*10-phase*.07));
+      const stretch=1+contact*(.4*wave+.14*Math.cos(v/scale*9+b.id));
+      const y0=stretchedY(sy,frontPx,contactAmount);
+      const y1=stretchedY(sy+1,frontPx,contactAmount);
+      // Contiguous opaque strips stretch the actual strokes; no erasing or crossfade.
+      g.save();g.globalAlpha=1;g.translate(192+shift,96+y0);g.scale(stretch,1);
+      if(which){
+        g.translate(0,y1-y0);g.scale(-1,-1);
+        g.drawImage(glyphs[which][index],0,191-sy,192,1,-96,0,192,y1-y0+.08);
+      }else g.drawImage(glyphs[which][index],0,sy,192,1,-96,0,192,y1-y0+.08);
+      g.restore();
     }
-    ctx.drawImage(layer.canvas,-size*2/3,-size*2/3,size*4/3,size*4/3);
+    ctx.save();ctx.globalAlpha=1;ctx.translate(b.x,b.y);ctx.rotate(b.turn);
+    ctx.drawImage(layer.canvas,-size,-size,size*2,size*2);
     // Small silver droplets separate from the liquid edge and rise with the film.
-    if(contactAmount>.02)for(let j=0;j<4;j++){
-      const seed=b.id*4+j,u=rand(seed,304),r=scale*(.018+u*.027);
+    if(contactAmount>.02)for(let j=0;j<8;j++){
+      const seed=b.id*4+j,u=rand(seed,304),r=scale*(.025+u*.04);
       const x=scale*(rand(seed,305)-.5)*.85+Math.sin((frozenClock===null?clock:frozenClock)*.6+seed)*scale*.025;
       const y=front-scale*(.12+u*.48);
-      ctx.globalAlpha=contactAmount*.68;ctx.fillStyle='#e8f1fa';
-      ctx.beginPath();ctx.ellipse(x,y,r*.8,r*(1.2+u),.2*Math.sin(seed),0,TAU);ctx.fill();
+      ctx.globalAlpha=contactAmount;
+      ctx.save();ctx.translate(x,y);ctx.rotate(.2*Math.sin(seed));
+      ctx.scale(.8,1.2+u);
+      const film=ctx.createRadialGradient(-r*.3,-r*.4,0,0,0,r);
+      film.addColorStop(0,'rgba(235,247,255,.025)');
+      film.addColorStop(.8,'rgba(220,240,255,.006)');
+      film.addColorStop(1,'rgba(230,246,255,.06)');
+      ctx.fillStyle=film;ctx.beginPath();ctx.arc(0,0,r,0,TAU);ctx.fill();
+      const rim=ctx.createLinearGradient(-r,-r,r,r);
+      rim.addColorStop(0,'rgba(245,252,255,.7)');
+      rim.addColorStop(.35,'rgba(180,213,235,.12)');
+      rim.addColorStop(.7,'rgba(225,243,255,.45)');
+      rim.addColorStop(1,'rgba(210,233,250,.16)');
+      ctx.strokeStyle=rim;ctx.lineWidth=.65;ctx.stroke();
+      ctx.beginPath();ctx.arc(0,0,r*.78,-2.5,-1.45);
+      ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=.8;ctx.stroke();
+      ctx.restore();
     }
     ctx.restore();
   }
