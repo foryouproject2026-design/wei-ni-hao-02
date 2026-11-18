@@ -91,11 +91,16 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
   let previousRoll=null,rollSampleTime=0,sampledSpeed=0,waterSpeed=0;
   let lastStrongRoll=-Infinity;
   let opticalFlow=0,opticalDrift=0;
-  const fillRatio=.52,readingHold=2.2;
+  const travellingWaves=[],splashes=[],splashImpacts=[],splashSheets=[];
+  let lastWallWave=-Infinity;
+  const wallRunup=[{height:0,velocity:0},{height:0,velocity:0}];
+  const fillRatio=.39,readingHold=2.2;
   const modes=[
     {y:0,v:0,f:4.8,d:1.65,drive:.54},
     {y:0,v:0,f:7.6,d:2.06,drive:-.17},
-    {y:0,v:0,f:10.5,d:2.58,drive:.22}
+    {y:0,v:0,f:10.5,d:2.58,drive:.22},
+    {y:0,v:0,f:13.1,d:3.7,drive:-.15},
+    {y:0,v:0,f:15.6,d:4.3,drive:.12}
   ];
   const glyphs=[],walls=[];
   let frameState=null;
@@ -140,7 +145,8 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
         g.fillStyle=ink;g.fillText(char,64,66);
         const descent=g.measureText(char)?.actualBoundingBoxDescent;
         const foot=Number.isFinite(descent)?clamp((66+descent)/128,.74,.98):.88;
-        return {image,foot,y:null,velocity:0,pitch:0,drift:0,driftVelocity:0};
+        return {image,foot,y:null,velocity:0,pitch:0,drift:0,driftVelocity:0,current:0,
+          phase:Math.random()*TAU,response:.83+Math.random()*.37};
       }));
     }
   }
@@ -167,8 +173,8 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     for(const [index,mode] of modes.entries()){
       // The walls entrain the bulk flow. Shorter reflected waves are excited
       // mainly when the rotation changes, then propagate with their own phase.
-      const forcing=index===0?waterSpeed*1.26+acceleration*.135:
-        waterSpeed*.13+acceleration*.077;
+      const forcing=index===0?waterSpeed*1.43+acceleration*.17:
+        waterSpeed*.15+acceleration*.099;
       mode.v+=(forcing*gain*mode.drive-mode.f*mode.f*restoring*mode.y-mode.d*mode.v)*dt;
       mode.y+=mode.v*dt;
       if(Math.abs(mode.y)>.28){
@@ -176,26 +182,70 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
         if(mode.y*mode.v>0)mode.v*=-.28;
       }
     }
+    const impulse=acceleration+.42*waterSpeed;
+    if(Math.abs(impulse)>5&&clock-lastWallWave>.22){
+      const toward=Math.sign(impulse);
+      wallRunup[toward<0?0:1].velocity+=Math.min(.72,Math.abs(impulse)*.019)*gain;
+      travellingWaves.push({x:toward>0?.97:.03,speed:-toward*1.12,
+        height:Math.min(.036,Math.abs(impulse)*.00078)*gain});
+      if(Math.abs(impulse)>8&&!reduced)
+        splashImpacts.push({side:toward,strength:Math.min(1,Math.abs(impulse)/36)});
+      lastWallWave=clock;
+    }
+    for(let i=travellingWaves.length-1;i>=0;i--){
+      const wave=travellingWaves[i];
+      wave.x+=wave.speed*dt;
+      if(wave.x<0||wave.x>1){
+        const side=wave.x<0?-1:1;
+        wallRunup[side<0?0:1].velocity+=wave.height*15;
+        if(wave.height>.007&&!reduced)
+          splashImpacts.push({side,strength:Math.min(.85,wave.height*31)});
+        wave.x=wave.x<0?-wave.x:2-wave.x;
+        wave.speed*=-1;wave.height*=.79;
+      }
+      wave.height*=Math.exp(-dt*.99);
+      if(wave.height<.0015)travellingWaves.splice(i,1);
+    }
+    for(const wall of wallRunup){
+      wall.velocity+=(-wall.height*92-wall.velocity*18)*dt;
+      wall.height=clamp(wall.height+wall.velocity*dt,0,.12);
+    }
     const flow=modes[0].v*.52+modes[1].v*.18+waterSpeed*.052;
     opticalDrift+=(flow-opticalDrift)*(1-Math.exp(-dt*5));
     opticalFlow+=opticalDrift*dt;
+
   }
   function resetWater(){
     oldAngle=current;oldSpeed=0;waterSpeed=0;opticalFlow=0;opticalDrift=0;
-    lastOptics=-Infinity;
+    lastOptics=-Infinity;travellingWaves.length=0;lastWallWave=-Infinity;
+    splashes.length=0;splashImpacts.length=0;splashSheets.length=0;
+    for(const wall of wallRunup)wall.height=wall.velocity=0;
     for(const mode of modes)mode.y=mode.v=0;
   }
   function resetRoll(){
     previousRoll=null;rollSampleTime=0;sampledSpeed=0;
   }
+  function waveShape(u,x){
+    const d=(u-x)/.086;
+    return Math.exp(-d*d);
+  }
   function waveAt(u){
     const slosh=modes.reduce((sum,m,i)=>sum+m.y*Math.cos((i+1)*Math.PI*u),0)*Math.min(halfW,halfH);
     const drift=reduced?.35:1;
+    // Several waves travel at different speeds; their envelopes shift the peaks
+    // across the tank while the standing-wave component carries wall rebound.
+    const waveEnergy=Math.min(.036,(Math.abs(modes[0].v)+Math.abs(modes[1].v))*.023);
+    const envelope=.61+.39*Math.sin(TAU*(u*.74-clock*.104)+1.41);
     const ripple=Math.min(halfW,halfH)*drift*(
-      .0061*Math.cos(Math.PI*4*u)*Math.sin(clock*1.9+.84)+
-      .0023*Math.cos(Math.PI*7*u)*Math.sin(clock*3.3+.9)+
-      .00055*Math.cos(Math.PI*12*u)*Math.sin(clock*5.2-.7));
-    return slosh+ripple;
+      (.009+waveEnergy)*envelope*Math.sin(TAU*(u*2.3-clock*.38)+.42*Math.sin(clock*.81))+
+      (.005+waveEnergy*.32)*Math.sin(TAU*(u*3.8+clock*.61)+1.71)+
+      .0019*Math.sin(TAU*(u*7.1-clock*.87)-.52));
+    const reflected=travellingWaves.reduce((height,wave)=>height+wave.height*
+      (waveShape(u,wave.x)+waveShape(u,-wave.x)+waveShape(u,2-wave.x)),0);
+    const runup=wallRunup[0].height*Math.exp(-u*18)
+      +wallRunup[1].height*Math.exp(-(1-u)*18);
+    // The canvas y-axis points down, so a positive crest raises the waterline.
+    return slosh+ripple-(reflected+runup)*Math.min(halfW,halfH);
   }
   function makeSurface(angle){
     // Rotate gravity into the glass frame, then project that frame into level coordinates.
@@ -204,11 +254,11 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     const left=Math.min(...points.map(p=>p.x)),right=Math.max(...points.map(p=>p.x));
     const minY=Math.min(...points.map(p=>p.y)),maxY=Math.max(...points.map(p=>p.y));
     const slices=[],count=112,dx=(right-left)/count;
-    const bank=[];
+    const bank=[],bankLevel=mix(minY,maxY,1-fillRatio);
     for(let i=0;i<points.length;i++){
       const p=points[i],q=points[(i+1)%points.length];
-      if((p.y>0)===(q.y>0))continue;
-      bank.push(mix(p.x,q.x,-p.y/(q.y-p.y)));
+      if((p.y>bankLevel)===(q.y>bankLevel))continue;
+      bank.push(mix(p.x,q.x,(bankLevel-p.y)/(q.y-p.y)));
     }
     const bankLeft=Math.min(...bank),bankRight=Math.max(...bank);
     const waveAtX=x=>waveAt(clamp((x-bankLeft)/(bankRight-bankLeft)));
@@ -245,15 +295,15 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     const water=new Path2D(edge),air=new Path2D(edge);
     water.lineTo(right+1,maxY+2);water.lineTo(left-1,maxY+2);water.closePath();
     air.lineTo(right+1,minY-2);air.lineTo(left-1,minY-2);air.closePath();
-    return {points,edge,water,air,yAt,left,right,minY,maxY,level,fill:wet/volume};
+    return {points,edge,water,air,yAt,left,right,minY,maxY,level,bankLeft,bankRight,fill:wet/volume};
   }
   function stageState(angle){
     const phase=cycle(angle),leg=Math.floor(phase/180),travel=phase-leg*180;
-    const outgoing=travel<90;
+    const outgoing=travel<113;
     return {
       which:outgoing?leg:1-leg,
-      depth:outgoing?smooth(29,87,travel):1-smooth(101,156,travel),
-      travel
+      depth:outgoing?smooth(29,106,travel):1-smooth(120,166,travel),
+      outgoing
     };
   }
   function floatingLetters(surface,state,dt){
@@ -262,33 +312,52 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
       return [];
     }
     const row=glyphs[state.which],size=letterSize;
-    const spacing=size*.97,left=-spacing*(row.length-1)/2-size/2;
+    const spacing=size*1.015,phraseWidth=spacing*(row.length-1)+size;
+    // Each sentence has a fixed position of its own and changes only underwater.
+    const phraseAnchor=(state.which===0?-.86:.63)*size;
+    const left=phraseAnchor-phraseWidth*.5;
     const changing=4*state.depth*(1-state.depth);
     const rocking=reduced?.3:1;
     const waveEnergy=modes.reduce((sum,mode)=>sum+Math.abs(mode.y)+Math.abs(mode.v)*.12,0);
-    const lift=Math.min(.19,waveEnergy*.66)*size*rocking;
-    return row.map((letter,i)=>{
+    const lift=Math.min(.17,waveEnergy*.48)*size*rocking;
+    const rollFlow=Math.min(.1,Math.abs(waterSpeed)*.017)*Math.sign(waterSpeed);
+    const centers=row.map((letter,i)=>{
       const anchor=left+i*spacing+size/2;
       if(!dt||letter.y===null){
-        letter.drift=0;letter.driftVelocity=0;
+        letter.drift=0;letter.driftVelocity=0;letter.current=0;
       }else{
-        const u=clamp((anchor-surface.left)/(surface.right-surface.left));
-        const localFlow=(modes[0].v*Math.sin(Math.PI*u)+
-          .33*modes[1].v*Math.sin(2*Math.PI*u))*rocking;
-        letter.driftVelocity+=(localFlow*size*23-letter.driftVelocity*7.5-letter.drift*30)*dt;
-        letter.drift=clamp(letter.drift+letter.driftVelocity*dt,-size*.25,size*.25);
+        const u=clamp((anchor+letter.drift-surface.bankLeft)/(surface.bankRight-surface.bankLeft));
+        // The velocity of each standing wave vanishes at the closed side walls.
+        const waveCurrent=travellingWaves.reduce((sum,wave)=>sum+wave.height*wave.speed*
+          (waveShape(u,wave.x)-waveShape(u,-wave.x)-waveShape(u,2-wave.x)),0);
+        const localFlow=modes.reduce((sum,mode,j)=>{
+          const harmonic=j+1;
+          return sum-mode.v*Math.sin(harmonic*Math.PI*u)/harmonic;
+        },waveCurrent*14)*rocking;
+        const eddy=(.025+Math.min(.16,waveEnergy*.41))*Math.sin(clock*1.74+letter.phase+u*2.8)*rocking;
+        const driftTarget=(localFlow*letter.response+eddy+rollFlow*rocking)*.24;
+        letter.current+=(driftTarget-letter.current)*(1-Math.exp(-dt*5.8/letter.response));
+        letter.driftVelocity+=(letter.current*size*26-letter.driftVelocity*9.4-letter.drift*37)*dt;
+        letter.drift=clamp(letter.drift+letter.driftVelocity*dt,-size*.085,size*.085);
       }
-      const center=anchor+letter.drift;
+      return anchor+letter.drift;
+    });
+    // Let the gaps open and close, while keeping the reading order and spacing.
+    for(let i=1;i<centers.length;i++)
+      centers[i]=centers[i-1]+clamp(centers[i]-centers[i-1],size*.88,size*1.27);
+    return row.map((letter,i)=>{
+      const center=centers[i];
       const line=surface.yAt(center);
       const leftWave=surface.yAt(center-size*.37),rightWave=surface.yAt(center+size*.37);
       const slope=clamp((rightWave-leftWave)/(size*.74),-.29,.29);
-      const swell=Math.sin(clock*4.2-i*.62+opticalFlow*3.5);
-      const support=(leftWave+line*2+rightWave)*.25+lift*swell;
-      const pitch=clamp(slope*1.25*rocking+lift/size*.54*Math.cos(clock*4.2-i*.62),-.27,.27);
+      const phase=clock*(3.2+letter.response)+letter.phase+opticalFlow*3.5;
+      const swell=.73*Math.sin(phase)+.27*Math.sin(phase*1.67+i*.39);
+      const support=(leftWave+line*2+rightWave)*.25+(lift+.013*size*rocking)*swell;
+      const pitch=clamp(slope*1.25*rocking+(lift/size+.012)*.68*Math.cos(phase+.4),-.27,.27);
       if(letter.y===null||!dt){
         letter.y=support;letter.velocity=0;letter.pitch=pitch;
       }else{
-        letter.velocity+=((support-letter.y)*117-letter.velocity*9.2)*dt;
+        letter.velocity+=((support-letter.y)*117/letter.response-letter.velocity*9.2)*dt;
         letter.y+=letter.velocity*dt;
         const lagLimit=size*.26;
         if(Math.abs(letter.y-support)>lagLimit){
@@ -299,7 +368,14 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
       }
       const stagger=(i/(row.length-1)-.5)*size*.16*changing;
       const draft=size*(.023+(1-rocking)*.006);
-      const bodyY=letter.y-letter.foot*size-draft+state.depth*size*1.26+stagger;
+      const draftY=letter.y-letter.foot*size-draft+state.depth*size*1.26+stagger;
+      let coveredY=line;
+      for(let j=0;j<=8;j++){
+        const x=(j/8-.5)*size;
+        coveredY=Math.max(coveredY,surface.yAt(center+x)-letter.pitch*x);
+      }
+      const lockUnder=smooth(.73,.97,state.depth);
+      const bodyY=mix(draftY,Math.max(draftY,coveredY+1.8),lockUnder);
       return {image:letter.image,size,center,line,slope,float:bodyY-line,bodyY,pitch:letter.pitch,drift:letter.drift};
     });
   }
@@ -319,7 +395,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
         const phase=center*.034-clock*2.25;
         const stretch=1.53+.18*Math.sin(phase)+Math.min(.24,Math.abs(slope)*.48);
         const rows=Math.max(1,Math.ceil(height/.85)),sourceStep=height/rows;
-        ctx.save();
+        ctx.save();ctx.globalAlpha=.8;
         // Orient each uninterrupted scanline to the local tangent of the water.
         ctx.transform(1,2*slope-pitch,0,-1,center,line);
         let near=closest*stretch;
@@ -331,9 +407,10 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
           const width=size*(1+.14*Math.sin(phase+depth*.092)*Math.min(1,u*3));
           const far=next*stretch+Math.sin(next*.074+phase)*Math.min(next*.17,size*.083);
           const crest=.5+.5*Math.sin(phase*1.2-depth*.224);
-          ctx.globalAlpha=(.84-.17*u)*(1-.36*crest**5*smooth(.04,.28,u));
+          const breakUp=crest**6*smooth(.03,.19,u);
+          const strip=Math.max(.22,(far-near)*(1-.59*breakUp)+.28);
           ctx.drawImage(image,0,128*(farthest-next)/size,128,128*sourceStep/size,
-            sway-width/2,-far,width,far-near+.3);
+            sway-width/2,-far,width,strip);
           near=far;
         }
         ctx.restore();
@@ -422,7 +499,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
       const u=i/facets,x=left+u*span,y=yAt(x);
       const slope=(yAt(x+slopeStep)-yAt(x-slopeStep))/(2*slopeStep);
       const curl=surfaceFold(u,.09,clock*(reduced?.35:1));
-      const width=bandDepth*(.62+.38*curl+motion*.28);
+      const width=bandDepth*(.62+.34*curl+motion*.56);
       front.push([x,y+.45]);
       back.push([x,y-width]);
       if(i%4===0){
@@ -457,11 +534,72 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     const {water}=surface;
     const radius=Math.hypot(halfW,halfH);
     ctx.save();ctx.clip(water);
+    const {left,right,level,maxY}=surface;
+    const volume=ctx.createLinearGradient(0,level,0,maxY+1);
+    volume.addColorStop(0,'rgba(126,126,126,.16)');
+    volume.addColorStop(.45,'rgba(85,85,85,.13)');
+    volume.addColorStop(1,'rgba(46,46,46,.075)');
+    ctx.fillStyle=volume;ctx.fillRect(left,-radius,right-left,radius*2);
     updateWaterOptics(surface,radius);
     ctx.drawImage(waterOptics,-radius,-radius*.28,radius*2,radius*1.28);
     renderLetters(surface,letters,true);
     ctx.restore();
     drawSurfaceSkin(surface);
+  }
+  function drawSplashes(surface,dt){
+    const span=surface.bankRight-surface.bankLeft,scale=Math.min(halfW,halfH);
+    for(const {side,strength} of splashImpacts){
+      const count=Math.floor(7+strength*20);
+      if(strength>.32&&splashSheets.length<6)splashSheets.push({side,strength,age:0});
+      for(let i=0;i<count&&splashes.length<96;i++){
+        const near=.028+Math.random()*(.065+.065*strength);
+        const x=surface.bankLeft+span*(side>0?1-near:near);
+        splashes.push({x,y:surface.yAt(x)-1.5,
+          vx:-side*scale*(.065+Math.random()*.42),
+          vy:-scale*(.29+Math.random()*.73)*Math.sqrt(strength),
+          r:Math.max(.85,scale*(.003+Math.random()*.0061)),
+          age:0});
+      }
+    }
+    splashImpacts.length=0;
+    ctx.save();
+    for(let i=splashSheets.length-1;i>=0;i--){
+      const sheet=splashSheets[i];
+      sheet.age+=dt;
+      const t=sheet.age/.38;
+      if(t>=1){splashSheets.splice(i,1);continue;}
+      const reach=scale*(.11+sheet.strength*.16);
+      const height=scale*(.028+sheet.strength*.074)*Math.sin(Math.PI*t);
+      const wall=sheet.side>0?surface.bankRight:surface.bankLeft;
+      const x=wall-sheet.side*reach*(.14+t*.31),y=surface.yAt(x);
+      const tip=x-sheet.side*reach*(.58+t*.42),end=x-sheet.side*reach*1.2;
+      const crest=y-height,base=surface.yAt(end);
+      const light=ctx.createLinearGradient(0,crest,0,y+1);
+      light.addColorStop(0,`rgba(244,244,244,${.72*(1-t)})`);
+      light.addColorStop(.5,`rgba(170,170,170,${.38*(1-t)})`);
+      light.addColorStop(1,'rgba(170,170,170,0)');
+      ctx.beginPath();ctx.moveTo(x,y);
+      ctx.bezierCurveTo(x-sheet.side*reach*.25,y-height*.76,tip+sheet.side*reach*.10,crest,tip,crest+height*.16);
+      ctx.quadraticCurveTo(end,crest+height*.56,end,base);
+      ctx.closePath();ctx.fillStyle=light;ctx.fill();
+    }
+    for(let i=splashes.length-1;i>=0;i--){
+      const drop=splashes[i];
+      drop.age+=dt;drop.vy+=scale*1.9*dt;
+      drop.x+=drop.vx*dt;drop.y+=drop.vy*dt;
+      if(drop.y>=surface.yAt(drop.x)||drop.age>.86){
+        splashes.splice(i,1);
+        continue;
+      }
+      const light=.25+.72*(1-drop.age/.86);
+      ctx.beginPath();
+      ctx.ellipse(drop.x,drop.y,drop.r,drop.r*(1+Math.min(.65,Math.abs(drop.vy)/scale)),
+        Math.atan2(-drop.vx,Math.abs(drop.vy)),0,TAU);
+      ctx.fillStyle=`rgba(224,224,224,${light*.67})`;ctx.fill();
+      ctx.beginPath();ctx.arc(drop.x-drop.r*.24,drop.y-drop.r*.27,drop.r*.39,0,TAU);
+      ctx.fillStyle=`rgba(250,250,250,${light})`;ctx.fill();
+    }
+    ctx.restore();
   }
   function paint(angle,dt=0){
     if(!ready)return;
@@ -477,6 +615,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     const glass=outline(surface.points);
     ctx.save();ctx.clip(glass);
     drawWater(surface,letters);
+    drawSplashes(surface,dt);
     renderLetters(surface,letters,false);
     ctx.restore();
     ctx.restore();
@@ -486,13 +625,15 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     screenContext.drawImage(frame,0,0);
     frameState={angle,view,which:state.which,depth:state.depth,fill:surface.fill,letterSize,
       exposed:letters.map(({float,size})=>clamp(-float/size)),
-      letters:letters.map(({bodyY,pitch,line,drift})=>({bodyY,pitch,line,drift})),
+      letters:letters.map(({bodyY,pitch,line,drift,center})=>({bodyY,pitch,line,drift,center})),
+      wallRunup:wallRunup.map(wall=>wall.height),splashes:splashes.length,splashSheets:splashSheets.length,
+      travellingWaves:travellingWaves.map(({x,speed,height})=>({x,speed,height})),
       wave:modes.map(m=>m.y),leftWater:surface.yAt(surface.left),rightWater:surface.yAt(surface.right)};
   }
   function stage(){
     const state=stageState(current);
     if(state.depth>=1)return '水線下';
-    if(state.depth>.01)return state.travel<90?'沉入水面':'浮出水面';
+    if(state.depth>.01)return state.outgoing?'沉入水面':'浮出水面';
     return state.which?'02 / '+DATA.target:'01 / '+DATA.source;
   }
   function updateUI() {
