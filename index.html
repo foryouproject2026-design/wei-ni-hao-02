@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#000000">
 <title>為你好｜比較・流動水紋</title>
 <style>
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 canvas{width:100vw;height:100dvh} .panel{box-shadow:none!important} .texts{display:none!important}
 
 :root{color-scheme:dark;--white:#ffffff;--muted:rgba(255,255,255,.48)}
@@ -78,7 +79,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
   const mobileRendering=matchMedia('(pointer:coarse)').matches;
   const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
   const params=new URLSearchParams(location.search),lockedForCapture=params.has('clean');
-  let W=0,H=0,DPR=1,cx=0,cy=0,halfW=0,halfH=0;
+  let W=0,H=0,DPR=1,cx=0,cy=0,halfW=0,halfH=0,letterSize=1;
   let current=0,target=0,vel=0,last=performance.now(),lastUI=0;
   let auto=false,textHoldRemaining=0;
   let sensor=false,sensorGotData=false,prevQ=null,accum=0,timeoutID=0;
@@ -111,6 +112,11 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,mobileRendering?1.6:2);
     cx=W/2;cy=H/2;
     halfW=Math.max(1,cx);halfH=Math.max(1,cy);
+    const screenShort=Math.min(screen.width,screen.height);
+    const viewportShort=Math.min(W,H);
+    const reference=mobileRendering&&screenShort>0?screenShort:viewportShort;
+    // Use the longest sentence and the short side, not the rotating projection.
+    letterSize=Math.min(reference*.67/Math.max([...DATA.source].length,[...DATA.target].length),71);
     geometry();
     canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);
     canvas.style.width=W+'px';canvas.style.height=H+'px';
@@ -250,8 +256,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
       for(const row of glyphs)for(const letter of row)letter.y=null;
       return [];
     }
-    const row=glyphs[state.which],shortSide=Math.min(halfW,halfH);
-    const size=Math.min((surface.right-surface.left)*.66/row.length,shortSide*.34,71);
+    const row=glyphs[state.which],size=letterSize;
     const spacing=size*.97,left=-spacing*(row.length-1)/2-size/2;
     const changing=4*state.depth*(1-state.depth);
     const rocking=reduced?.3:1;
@@ -466,7 +471,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     renderLetters(surface,letters,false);
     ctx.restore();
     ctx.restore();
-    frameState={angle,view,which:state.which,depth:state.depth,fill:surface.fill,
+    frameState={angle,view,which:state.which,depth:state.depth,fill:surface.fill,letterSize,
       exposed:letters.map(({float,size})=>clamp(-float/size)),
       letters:letters.map(({bodyY,pitch,line,drift})=>({bodyY,pitch,line,drift})),
       wave:modes.map(m=>m.y),leftWater:surface.yAt(surface.left),rightWater:surface.yAt(surface.right)};
