@@ -4,42 +4,52 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<title>話語之間 | Interactive Installation</title>
+<title>為你好｜比較・流動水紋</title>
 <style>
-@font-face{font-family:"Noto Serif TC";font-style:normal;font-weight:700;src:url(data:font/ttf;base64,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) format("truetype");}
 canvas{width:100vw;height:100dvh} .panel{box-shadow:none!important} .texts{display:none!important}
 
-:root{color-scheme:dark;--white:#fff;--muted:rgba(255,255,255,.48)}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif}
+:root{color-scheme:dark;--white:#ffffff;--muted:rgba(255,255,255,.48)}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000000;color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif}
 button,input,select,summary{font:inherit}button,select{color:inherit}button{cursor:pointer}button:focus-visible,summary:focus-visible,select:focus-visible{outline:1px solid white;outline-offset:5px}
-canvas{position:fixed;inset:0;display:block;touch-action:none;cursor:grab;background:#000}canvas.dragging{cursor:grabbing}
+canvas{position:fixed;inset:0;display:block;touch-action:none;cursor:grab;background:#000000}canvas.dragging{cursor:grabbing}
 .hud{position:fixed;inset:0;pointer-events:none;padding:clamp(20px,3.3vw,44px);padding-top:max(24px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:space-between}
 header{display:flex;align-items:start;justify-content:space-between;gap:24px}
 .brand{font-size:10px;letter-spacing:.21em;font-weight:500;line-height:1.8}
 h1{font-size:18px;letter-spacing:.24em;font-weight:400;margin:12px 0 0}.subtitle{font-size:10px;letter-spacing:.12em;margin-top:9px;color:var(--muted)}
-.tag{font-size:10px;letter-spacing:.12em;text-align:right;line-height:1.8}.status-dot{width:4px;height:4px;border-radius:100%;background:#fff;display:inline-block;margin-right:7px;vertical-align:middle}
+.tag{font-size:10px;letter-spacing:.12em;text-align:right;line-height:1.8}.status-dot{width:4px;height:4px;border-radius:100%;background:#ffffff;display:inline-block;margin-right:7px;vertical-align:middle}
 .top-actions{margin-top:13px;display:flex;justify-content:end;gap:14px;pointer-events:auto}.link{border:0;padding:0;background:transparent;font-size:10px;letter-spacing:.08em;color:rgba(255,255,255,.7)}.link:hover{color:white}
 footer{width:min(620px,100%);margin:0 auto;pointer-events:auto}.meter{display:flex;align-items:end;justify-content:space-between;margin-bottom:13px;gap:20px}.angle{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:31px;font-weight:300;letter-spacing:-.035em;line-height:1}.stage{font-size:11px;letter-spacing:.19em;margin-bottom:4px;color:rgba(255,255,255,.72)}
 .timeline{width:100%;position:relative}input[type=range]{--progress:0%;appearance:none;-webkit-appearance:none;display:block;width:100%;height:24px;margin:0;background:transparent;cursor:ew-resize;touch-action:pan-y}
-input[type=range]::-webkit-slider-runnable-track{height:1px;background:linear-gradient(to right,#fff var(--progress),rgba(255,255,255,.23) var(--progress))}
+input[type=range]::-webkit-slider-runnable-track{height:1px;background:linear-gradient(to right,#ffffff var(--progress),rgba(255,255,255,.23) var(--progress))}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;height:10px;width:10px;margin-top:-4.5px;border:1px solid white;border-radius:50%;background:black}
 input[type=range]::-moz-range-track{height:1px;background:rgba(255,255,255,.3)}input[type=range]::-moz-range-progress{height:1px;background:white}input[type=range]::-moz-range-thumb{height:9px;width:9px;border:1px solid white;border-radius:50%;background:black}
 .ticks{display:flex;justify-content:space-between;margin:2px 0 19px}.tick{border:0;background:none;padding:0;color:var(--muted);font-size:9px;font-family:ui-monospace,monospace}.tick:hover{color:white}
-.buttons{display:flex;gap:9px;flex-wrap:wrap}.btn{border:1px solid rgba(255,255,255,.32);background:#000;padding:11px 18px;border-radius:2px;font-size:11px;letter-spacing:.07em;min-height:38px;transition:border-color .2s}.btn:hover{border-color:white}.btn.primary{background:#fff;color:#000;border-color:white;min-width:112px}.btn.minor{padding-left:13px;padding-right:13px;color:rgba(255,255,255,.72)}
+.buttons{display:flex;gap:9px;flex-wrap:wrap}.btn{border:1px solid rgba(255,255,255,.32);background:#000000;padding:11px 18px;border-radius:2px;font-size:11px;letter-spacing:.07em;min-height:38px;transition:border-color .2s}.btn:hover{border-color:white}.btn.primary{background:#ffffff;color:#000000;border-color:white;min-width:112px}.btn.minor{padding-left:13px;padding-right:13px;color:rgba(255,255,255,.72)}
 .status{font-size:10px;color:var(--muted);margin:14px 0 0;line-height:1.8;min-height:18px;letter-spacing:.03em}
 details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:none}summary::-webkit-details-marker{display:none}
-.panel{position:absolute;top:30px;right:0;width:min(330px,calc(100vw - 40px));padding:22px;background:#060606;border:1px solid rgba(255,255,255,.25);line-height:1.7;font-size:11px;box-shadow:0 12px 50px #000}
-.panel h2{margin:0 0 18px;font-size:13px;font-weight:400;letter-spacing:.12em}.field{display:flex;justify-content:space-between;gap:15px;align-items:center;margin:13px 0}.field select{background:black;border:1px solid #444;padding:7px;font-size:11px;max-width:170px}.field input{accent-color:white}.panel p{color:var(--muted);margin-bottom:0;font-size:10px}.texts{border-top:1px solid #333;margin-top:20px;padding-top:15px;display:flex;gap:25px;white-space:pre-line;font-size:11px}
+.panel{position:absolute;top:30px;right:0;width:min(330px,calc(100vw - 40px));padding:22px;background:#060606;border:1px solid rgba(255,255,255,.25);line-height:1.7;font-size:11px;box-shadow:0 12px 50px #000000}
+.panel h2{margin:0 0 18px;font-size:13px;font-weight:400;letter-spacing:.12em}.field{display:flex;justify-content:space-between;gap:15px;align-items:center;margin:13px 0}.field select{background:black;border:1px solid #444444;padding:7px;font-size:11px;max-width:170px}.field input{accent-color:white}.panel p{color:var(--muted);margin-bottom:0;font-size:10px}.texts{border-top:1px solid #333333;margin-top:20px;padding-top:15px;display:flex;gap:25px;white-space:pre-line;font-size:11px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.clean .hud{display:none}#restore{position:fixed;top:max(18px,env(safe-area-inset-top));right:20px;border:1px solid #444;padding:9px 12px;color:#aaa;opacity:.5;background:black;font-size:10px}#restore:hover{opacity:1}#restore[hidden]{display:none}
+.clean .hud{display:none}#restore{position:fixed;top:max(18px,env(safe-area-inset-top));right:20px;border:1px solid #444444;padding:9px 12px;color:#aaaaaa;opacity:.5;background:black;font-size:10px}#restore:hover{opacity:1}#restore[hidden]{display:none}
 @media (max-width:520px){.hud{padding-left:20px;padding-right:20px}.brand{font-size:8px;letter-spacing:.14em}h1{font-size:16px}.subtitle{font-size:9px}.tag{font-size:8px}.top-actions{gap:12px}.buttons{gap:7px}.btn{padding:10px 13px;font-size:10px}.btn.primary{min-width:104px}.angle{font-size:27px}.stage{font-size:10px}.ticks{margin-bottom:14px}.status{font-size:9px}.btn.minor{padding:10px}.meter{margin-bottom:8px}}
 @media(max-height:540px){h1,.subtitle{display:none}.hud{padding:15px 22px}.brand{font-size:8px}.top-actions{margin-top:4px}.meter{margin-bottom:0}.angle{font-size:23px}.ticks{margin:0 0 8px}.status{display:none}.btn{padding:6px 12px;min-height:29px}.buttons{justify-content:center}footer{max-width:520px}.stage{font-size:9px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 .stage{max-width:calc(100% - 95px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.status{min-height:36px}@media(max-height:540px){.status{display:none}}
+.hud{color:#eee;--muted:#aaa;text-shadow:0 1px 8px #000}
+.stage,.link{color:#ccc}.link:hover,.tick:hover{color:#fff}.status-dot{background:#eee}
+.btn{color:#f5f5f5;text-shadow:none}.btn.primary{color:#242424}
+.panel,.panel .link{color:#f5f5f5}.panel p{color:#cacaca;text-shadow:none}
+input[type=range]::-webkit-slider-runnable-track{background:linear-gradient(to right,#eee var(--progress),#555 var(--progress))}
+input[type=range]::-moz-range-track{background:#555}
+input[type=range]::-moz-range-progress,input[type=range]::-moz-range-thumb{background:#eee}
+input[type=range]::-webkit-slider-thumb{background:#eee}
+.btn{background:rgba(7,7,7,.85);border:0}.panel,#restore,.field select{border:0}.btn.primary{background:#ffffff;text-shadow:none}
+input[type=range]::-webkit-slider-thumb{border:0;background:#eee}
+input[type=range]::-moz-range-thumb{border:0;background:#eee}
 </style>
 </head>
 <body>
-<canvas id="art" aria-label="白色圓弧短線構成的可逆中文字旋轉作品"></canvas>
+<canvas id="art" aria-label="透明容器中的水面與浮沉文字"></canvas>
 <div class="hud">
 <header>
 <div><div class="brand">BETWEEN WORDS<br>INTERACTIVE TYPOGRAPHY / 04</div><h1 data-label="title"></h1><div class="subtitle" data-label="subtitle"></div></div>
@@ -53,8 +63,8 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
 </footer>
 </div>
 <button id="restore" hidden data-label="restore"></button>
-<p class="sr-only">0度顯示「我們這麼做是為了你好」；180度完整顯示旋轉180度的「因為你對我們很重要」；360度回到正向第一句。</p>
-<script id="stroke-data" type="application/json">{"source": "你眼光也太差", "target": "我怕你被傷害"}</script>
+<p class="sr-only">0° 你看看別人。180° 你比不上人家。360° 回到第一句。</p>
+<script id="stroke-data" type="application/json">{"source":"你看看別人","target":"你比不上人家"}</script>
 <script>const UI={"title":"\u8a71\u8a9e\u4e4b\u9593","subtitle":"0\u00b0 \u8d77\u53e5 / 180\u00b0 \u5012\u7f6e / 360\u00b0 \u56de\u5230\u8d77\u53e5","artLabel":"\u767d\u8272\u5713\u5f27\u77ed\u7dda\u69cb\u6210\u7684\u53ef\u9006\u4e2d\u6587\u5b57\u65cb\u8f49\u4f5c\u54c1","rangeLabel":"\u65cb\u8f49\u89d2\u5ea6\uff0c\u96f6\u81f3\u4e09\u767e\u516d\u5341\u5ea6","description":"0\u5ea6\u986f\u793a\u300c\u6211\u5011\u9019\u9ebc\u505a\u662f\u70ba\u4e86\u4f60\u597d\u300d\uff1b180\u5ea6\u5b8c\u6574\u986f\u793a\u65cb\u8f49180\u5ea6\u7684\u300c\u56e0\u70ba\u4f60\u5c0d\u6211\u5011\u5f88\u91cd\u8981\u300d\uff1b360\u5ea6\u56de\u5230\u6b63\u5411\u7b2c\u4e00\u53e5\u3002","stageA":"01 / \u7b2c\u4e00\u53e5\u30fb\u6b63\u5411","stageIn":"02 / \u9806\u6642\u91dd\u6372\u5165","stageVortex":"03 / \u5713\u5f62\u6d41\u52d5","stageOut":"04 / \u7b2c\u4e8c\u53e5\u9010\u6f38\u6210\u5f62","stageB":"05 / \u7b2c\u4e8c\u53e5\u30fb180\u00b0 \u5012\u7f6e","pause":"\u2161  \u66ab\u505c\u9810\u89bd","replay":"\u21bb  \u91cd\u65b0\u64ad\u653e","play":"\u25b7  \u64ad\u653e\u9810\u89bd","gyro":"\u555f\u7528\u624b\u6a5f\u8f49\u52d5","gyroOff":"\u505c\u7528\u624b\u6a5f\u8f49\u52d5","modeGyro":"\u624b\u6a5f\u4e92\u52d5","modeAuto":"\u81ea\u52d5\u9810\u89bd","modeManual":"\u624b\u52d5\u4e92\u52d5","manualHelp":"\u6cbf\u5713\u5fc3\u9806\u6642\u91dd\u62d6\u66f3\uff0c\u6216\u4f7f\u7528\u6ed1\u687f\u3002\u53cd\u5411\u64cd\u4f5c\u53ef\u9010\u6b65\u9084\u539f\u3002","previewHelp":"\u6b63\u5728\u9806\u6642\u91dd\u9810\u89bd\u3002\u62d6\u52d5\u6ed1\u687f\u6216\u756b\u9762\uff0c\u5373\u53ef\u63a5\u624b\u63a7\u5236\u3002","endHelp":"\u5df2\u5230 360\u00b0\uff0c\u56de\u5230\u6b63\u5411\u7b2c\u4e00\u53e5\u3002\u53ef\u53cd\u5411\u9084\u539f\uff0c\u6216\u91cd\u65b0\u64ad\u653e\u4e00\u5708\u3002","paused":"\u5df2\u66ab\u505c\uff0c\u53ef\u505c\u5728\u4efb\u4f55\u89d2\u5ea6\u6aa2\u67e5\u7dda\u689d\u3002","ready":"0\u00b0 \u7b2c\u4e00\u53e5 / 180\u00b0 \u5012\u7f6e\u7b2c\u4e8c\u53e5 / 360\u00b0 \u56de\u5230\u7b2c\u4e00\u53e5\u3002\u62d6\u52d5\u6ed1\u687f\u958b\u59cb\u3002","sensorHelp":"\u4ee5\u76ee\u524d\u59ff\u52e2\u70ba 0\u00b0\uff0c\u50cf\u8f49\u5713\u76e4\u4e00\u6a23\u9806\u6642\u91dd\u8f49\u52d5\u624b\u6a5f\u3002\u5efa\u8b70\u5148\u95dc\u9589\u81ea\u52d5\u65cb\u8f49\u3002","needHTTPS":"\u624b\u6a5f\u611f\u6e2c\u5668\u9700\u8981 HTTPS\u3002\u8acb\u90e8\u7f72\u5230 HTTPS \u7db2\u5740\uff1b\u76ee\u524d\u4ecd\u53ef\u7528\u6ed1\u687f\u8207\u62d6\u66f3\u3002","noSensor":"\u6b64\u700f\u89bd\u5668\u672a\u63d0\u4f9b\u65b9\u5411\u611f\u6e2c\u5668\uff0c\u8acb\u7528\u6ed1\u687f\u6216\u756b\u9762\u62d6\u66f3\u3002","denied":"\u672a\u53d6\u5f97\u611f\u6e2c\u5668\u6b0a\u9650\u3002\u53ef\u5728\u700f\u89bd\u5668\u8a2d\u5b9a\u5141\u8a31\uff0c\u6216\u6539\u7528\u6ed1\u687f\u3002","waitSensor":"\u7b49\u5f85\u65b9\u5411\u611f\u6e2c\u8cc7\u6599\uff0c\u8acb\u7a0d\u5fae\u8f49\u52d5\u624b\u6a5f\u2026\u2026","noData":"\u6c92\u6709\u6536\u5230\u65b9\u5411\u8cc7\u6599\u3002\u8acb\u78ba\u8a8d HTTPS\u3001\u700f\u89bd\u5668\u6b0a\u9650\u8207\u88dd\u7f6e\u652f\u63f4\uff1b\u6ed1\u687f\u4ecd\u53ef\u64cd\u4f5c\u3002","permissionError":"\u611f\u6e2c\u5668\u672a\u80fd\u555f\u7528\uff1a","calibrated":"\u76ee\u524d\u624b\u6a5f\u59ff\u52e2\u5df2\u8a2d\u70ba 0\u00b0\u3002","axisChanged":"\u5df2\u5207\u63db\u8f49\u52d5\u65b9\u5f0f\uff0c\u5f9e\u76ee\u524d\u89d2\u5ea6\u63a5\u7e8c\u3002","noFullscreen":"\u6b64\u700f\u89bd\u5668\u4e0d\u652f\u63f4\u5168\u87a2\u5e55\uff1b\u53ef\u6539\u7528\u300c\u7d14\u756b\u9762\u300d\u3002","clean":"\u7d14\u756b\u9762","settings":"\u8a2d\u5b9a","settingsTitle":"\u4e92\u52d5\u8a2d\u5b9a","axis":"\u624b\u6a5f\u8f49\u52d5\u65b9\u5f0f","axisRoll":"\u50cf\u5713\u76e4\u9806\u6642\u91dd\u8f49\u52d5","axisHeading":"\u6c34\u5e73\u5411\u53f3\u8f49\u8eab","gain":"\u8f49\u52d5\u7bc4\u570d","reverse":"\u53cd\u8f49\u611f\u6e2c\u65b9\u5411","fullscreen":"\u5168\u87a2\u5e55\u5c55\u793a","sensorNote":"\u624b\u6a5f\u9700\u4ee5 HTTPS \u958b\u555f\u4e26\u6388\u6b0a\u3002\u4e0d\u540c\u88dd\u7f6e\u7684\u611f\u6e2c\u5ea7\u6a19\u53ef\u80fd\u4e0d\u540c\uff0c\u53ef\u5207\u63db\u8f49\u52d5\u65b9\u5f0f\u6216\u53cd\u8f49\u65b9\u5411\u3002\u5efa\u8b70\u95dc\u9589\u7cfb\u7d71\u81ea\u52d5\u65cb\u8f49\u3002","calibrate":"\u6821\u6b63 0\u00b0","reset":"\u56de\u5230\u8d77\u9ede","restore":"\u986f\u793a\u63a7\u5236\u4ecb\u9762","noCanvas":"\u6b64\u700f\u89bd\u5668\u4e0d\u652f\u63f4 Canvas\uff0c\u8acb\u6539\u7528\u65b0\u7248\u700f\u89bd\u5668\u3002","stageReturn":"06 / \u7e7c\u7e8c\u9806\u6642\u91dd\u8fd4\u56de","stageHome":"07 / \u7b2c\u4e00\u53e5\u30fb360\u00b0 \u6b63\u5411"};</script>
 <script>(() => {
   'use strict';
@@ -65,407 +75,431 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
   const mix=(a,b,t)=>a+(b-a)*t;
   const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a));return t*t*t*(t*(t*6-15)+10)};
   const cycle=a=>((a%360)+360)%360;
-  const rand=(i,k=0)=>{const n=Math.sin(i*127.1+k*311.7)*43758.5453;return n-Math.floor(n)};
   const mobileRendering=matchMedia('(pointer:coarse)').matches;
-  let W=0,H=0,DPR=1,cx=0,cy=0,scale=1,top=0,bottom=0;
-  let target=0,current=0,vel=0,last=performance.now(),lastUI=0;
-  let auto=false,autoOrigin=0,autoBegin=0,filteredPlaybackRate=1,pursuitPlaybackRate=1;
-  const TEXT_HOLD_SECONDS=3;let textHoldRemaining=0;
-  let sensor=false,sensorGotData=false,prevQ=null,accum=0,timeoutID=0,sensorTextAnchor=null;
-  let direction=1,sensitivity=1,sensorType='roll',rawHeading=null,rawRoll=0;
-  let clean=false,scrubbing=false,ready=false;
-  const params=new URLSearchParams(location.search);let lockedForCapture=params.has('clean');
-  let clock=0,frozenClock=null,field=[],carriers=[],lastScene=[];
-  let motionStrength=0;
-  const foamMotion=new Map();
   const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  const glyphs=[];
-  // Words travel in the same upward current as the surrounding foam.
-  function rebuild(){
-    top=clean?0:document.querySelector('header').getBoundingClientRect().bottom+20;
-    bottom=clean?H:document.querySelector('footer').getBoundingClientRect().top-18;
-    cx=W/2;cy=clamp(H*.48,top+(bottom-top)*.4,top+(bottom-top)*.6);
-    scale=Math.max(16,Math.min(64,(W-60)/5.7,(bottom-top)/4.7));
-    glyphs.length=0;
-    for(const text of [DATA.source,DATA.target])glyphs.push([...text].map(ch=>{
-      const c=document.createElement('canvas');c.width=c.height=192;
-      const g=c.getContext('2d');g.textAlign='center';g.textBaseline='middle';
-      g.font='700 146px "Noto Serif TC","Microsoft JhengHei",serif';
-      // Baked silver body and offset membrane rims give letters soft glass thickness.
-      // These colors never change with transition progress.
-      const body=g.createLinearGradient(30,30,145,166);
-      body.addColorStop(0,'#ffffff');body.addColorStop(.24,'#f5f7fb');
-      body.addColorStop(.48,'#bac4d2');body.addColorStop(.62,'#f6f9ff');body.addColorStop(1,'#d7e0ec');
-      g.lineJoin='round';g.lineWidth=3.2;g.strokeStyle='#8b99ac';g.strokeText(ch,97,103);
-      g.fillStyle=body;g.fillText(ch,96,101);
-      const mask=document.createElement('canvas');mask.width=mask.height=192;
-      const m=mask.getContext('2d');m.drawImage(c,0,0);m.globalCompositeOperation='destination-out';m.drawImage(c,1.6,2.5);
-      m.globalCompositeOperation='source-in';m.fillStyle='#fff';m.fillRect(0,0,192,192);
-      g.drawImage(mask,0,0);return c;
-    }));
-    const newField=!field.length;
-    if(newField)field=Array.from({length:mobileRendering?48:76},(_,i)=>{
-      const r=5+rand(i,4)**1.6*Math.min(W*.055,29);
-      return {id:i,x:rand(i,1)*W,y:rand(i,2)*(H+260)-130,r,vx:0,vy:-(8+rand(i,3)*17),
-        speed:9+rand(i,5)*19,z:rand(i,6),phase:Math.random()*TAU,sq:0,sv:0,turn:0,noiseX:0,noiseY:0};
+  const params=new URLSearchParams(location.search),lockedForCapture=params.has('clean');
+  let W=0,H=0,DPR=1,cx=0,cy=0,halfW=0,halfH=0;
+  let current=0,target=0,vel=0,last=performance.now(),lastUI=0;
+  let auto=false,textHoldRemaining=0;
+  let sensor=false,sensorGotData=false,prevQ=null,accum=0,timeoutID=0;
+  let direction=1,sensitivity=1,sensorType='roll',rawHeading=null;
+  let clean=false,scrubbing=false,ready=false,clock=0,oldAngle=0,oldSpeed=0;
+  let displayRoll=0,hasDisplayRoll=false,gravityStrength=1;
+  let previousRoll=null,rollSampleTime=0,sampledSpeed=0,waterSpeed=0;
+  let opticalFlow=0,opticalDrift=0;
+  const fillRatio=.52,readingHold=2.2;
+  const modes=[
+    {y:0,v:0,f:4.8,d:1.65,drive:.54},
+    {y:0,v:0,f:7.6,d:2.06,drive:-.17},
+    {y:0,v:0,f:10.5,d:2.58,drive:.22}
+  ];
+  const glyphs=[],walls=[];
+  let frameState=null;
+
+  function geometry(){
+    walls.splice(0,walls.length,
+      {x:halfW,y:halfH},{x:-halfW,y:halfH},
+      {x:-halfW,y:-halfH},{x:halfW,y:-halfH});
+  }
+  function outline(points){
+    const path=new Path2D();
+    points.forEach(({x,y},i)=>i?path.lineTo(x,y):path.moveTo(x,y));
+    path.closePath();
+    return path;
+  }
+  function resize(){
+    W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,mobileRendering?1.6:2);
+    cx=W/2;cy=H/2;
+    halfW=Math.max(1,cx);halfH=Math.max(1,cy);
+    geometry();
+    canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);
+    canvas.style.width=W+'px';canvas.style.height=H+'px';
+    if(ready){lastOptics=-Infinity;paint(current);}
+  }
+  function makeGlyphs(){
+    for(const text of [DATA.source,DATA.target]){
+      glyphs.push([...text].map(char=>{
+        const image=document.createElement('canvas');
+        image.width=image.height=128;
+        const g=image.getContext('2d');
+        g.font='700 105px "Microsoft JhengHei","PingFang TC","Noto Sans CJK TC",serif';
+        g.textAlign='center';g.textBaseline='middle';
+        const ink=g.createLinearGradient(0,14,0,114);
+        ink.addColorStop(0,'#fff');ink.addColorStop(.72,'#eee');ink.addColorStop(1,'#bdbdbd');
+        g.fillStyle=ink;g.fillText(char,64,66);
+        const descent=g.measureText(char)?.actualBoundingBoxDescent;
+        const foot=Number.isFinite(descent)?clamp((66+descent)/128,.74,.98):.88;
+        return {image,foot,y:null,velocity:0,pitch:0,drift:0,driftVelocity:0};
+      }));
+    }
+  }
+  function stepWater(dt,angle,now){
+    clock+=dt;
+    const measured=sensor&&hasDisplayRoll;
+    const speed=measured
+      ? sampledSpeed*Math.exp(-Math.max(0,now-rollSampleTime-42)/68)
+      : clamp((angle-oldAngle)*DEG/dt,-11,11);
+    oldAngle=angle;
+    const rate=1-Math.exp(-dt*(measured?17:25));
+    waterSpeed+=(speed-waterSpeed)*rate;
+    const acceleration=clamp((waterSpeed-oldSpeed)/dt,-54,54);
+    oldSpeed=waterSpeed;
+
+    // Angular acceleration drives the liquid. Standing waves carry velocity
+    // through a stop or reversal and lose energy at each trip across the tank.
+    const roll=measured?displayRoll:-angle*DEG;
+    const wallDistance=Math.min(halfW/Math.max(.001,Math.abs(Math.cos(roll))),
+      halfH/Math.max(.001,Math.abs(Math.sin(roll))));
+    const restoring=clamp(Math.min(halfW,halfH)/Math.max(1,wallDistance),.48,1.05)
+      *(measured?clamp(gravityStrength,.45,1):1);
+    const gain=reduced?.45:1;
+    for(const [index,mode] of modes.entries()){
+      // The walls entrain the bulk flow. Shorter reflected waves are excited
+      // mainly when the rotation changes, then propagate with their own phase.
+      const forcing=index===0?waterSpeed*1.26+acceleration*.135:
+        waterSpeed*.13+acceleration*.077;
+      mode.v+=(forcing*gain*mode.drive-mode.f*mode.f*restoring*mode.y-mode.d*mode.v)*dt;
+      mode.y+=mode.v*dt;
+      if(Math.abs(mode.y)>.28){
+        mode.y=Math.sign(mode.y)*.28;
+        if(mode.y*mode.v>0)mode.v*=-.28;
+      }
+    }
+    const flow=modes[0].v*.52+modes[1].v*.18+waterSpeed*.052;
+    opticalDrift+=(flow-opticalDrift)*(1-Math.exp(-dt*5));
+    opticalFlow+=opticalDrift*dt;
+  }
+  function resetWater(){
+    oldAngle=current;oldSpeed=0;waterSpeed=0;opticalFlow=0;opticalDrift=0;
+    lastOptics=-Infinity;
+    for(const mode of modes)mode.y=mode.v=0;
+  }
+  function resetRoll(){
+    previousRoll=null;rollSampleTime=0;sampledSpeed=0;
+  }
+  function waveAt(u){
+    const slosh=modes.reduce((sum,m,i)=>sum+m.y*Math.cos((i+1)*Math.PI*u),0)*Math.min(halfW,halfH);
+    const drift=reduced?.35:1;
+    const ripple=Math.min(halfW,halfH)*drift*(
+      .0061*Math.cos(Math.PI*4*u)*Math.sin(clock*1.9+.84)+
+      .0023*Math.cos(Math.PI*7*u)*Math.sin(clock*3.3+.9)+
+      .00055*Math.cos(Math.PI*12*u)*Math.sin(clock*5.2-.7));
+    return slosh+ripple;
+  }
+  function makeSurface(angle){
+    // Rotate gravity into the glass frame, then project that frame into level coordinates.
+    const a=angle*DEG,downX=Math.sin(a),downY=Math.cos(a);
+    const points=walls.map(({x,y})=>({x:x*downY-y*downX,y:x*downX+y*downY}));
+    const left=Math.min(...points.map(p=>p.x)),right=Math.max(...points.map(p=>p.x));
+    const minY=Math.min(...points.map(p=>p.y)),maxY=Math.max(...points.map(p=>p.y));
+    const slices=[],count=112,dx=(right-left)/count;
+    const bank=[];
+    for(let i=0;i<points.length;i++){
+      const p=points[i],q=points[(i+1)%points.length];
+      if((p.y>0)===(q.y>0))continue;
+      bank.push(mix(p.x,q.x,-p.y/(q.y-p.y)));
+    }
+    const bankLeft=Math.min(...bank),bankRight=Math.max(...bank);
+    const waveAtX=x=>waveAt(clamp((x-bankLeft)/(bankRight-bankLeft)));
+    let volume=0;
+    for(let i=0;i<count;i++){
+      const x=left+dx*(i+.5);
+      let top=Infinity,bottom=-Infinity;
+      for(let j=0;j<points.length;j++){
+        const p=points[j],q=points[(j+1)%points.length];
+        if(x<Math.min(p.x,q.x)||x>=Math.max(p.x,q.x))continue;
+        const y=mix(p.y,q.y,(x-p.x)/(q.x-p.x));
+        top=Math.min(top,y);bottom=Math.max(bottom,y);
+      }
+      slices.push({top,bottom,wave:waveAtX(x)});
+      volume+=bottom-top;
+    }
+    // Solve the fill level again for the deformed surface to conserve the cross-sectional area.
+    let lo=minY-halfH,hi=maxY+halfH,wet=0;
+    for(let i=0;i<16;i++){
+      const mid=(lo+hi)/2;
+      wet=0;
+      for(const {top,bottom,wave} of slices)wet+=bottom-clamp(mid+wave,top,bottom);
+      if(wet>volume*fillRatio)lo=mid;else hi=mid;
+    }
+    const level=(lo+hi)/2;
+    const yAt=x=>level+waveAtX(x);
+    const edge=new Path2D();
+    edge.moveTo(left-1,yAt(left));
+    for(let i=0;i<=count;i++){
+      const x=left+i*dx;
+      edge.lineTo(x,yAt(x));
+    }
+    edge.lineTo(right+1,yAt(right));
+    const water=new Path2D(edge),air=new Path2D(edge);
+    water.lineTo(right+1,maxY+2);water.lineTo(left-1,maxY+2);water.closePath();
+    air.lineTo(right+1,minY-2);air.lineTo(left-1,minY-2);air.closePath();
+    return {points,edge,water,air,yAt,left,right,minY,maxY,level,fill:wet/volume};
+  }
+  function stageState(angle){
+    const phase=cycle(angle),leg=Math.floor(phase/180),travel=phase-leg*180;
+    const outgoing=travel<90;
+    return {
+      which:outgoing?leg:1-leg,
+      depth:outgoing?smooth(29,87,travel):1-smooth(101,156,travel),
+      travel
+    };
+  }
+  function floatingLetters(surface,state,dt){
+    if(state.depth>=1){
+      for(const row of glyphs)for(const letter of row)letter.y=null;
+      return [];
+    }
+    const row=glyphs[state.which],shortSide=Math.min(halfW,halfH);
+    const size=Math.min((surface.right-surface.left)*.66/row.length,shortSide*.34,71);
+    const spacing=size*.97,left=-spacing*(row.length-1)/2-size/2;
+    const changing=4*state.depth*(1-state.depth);
+    const rocking=reduced?.3:1;
+    const waveEnergy=modes.reduce((sum,mode)=>sum+Math.abs(mode.y)+Math.abs(mode.v)*.12,0);
+    const lift=Math.min(.19,waveEnergy*.66)*size*rocking;
+    return row.map((letter,i)=>{
+      const anchor=left+i*spacing+size/2;
+      if(!dt||letter.y===null){
+        letter.drift=0;letter.driftVelocity=0;
+      }else{
+        const u=clamp((anchor-surface.left)/(surface.right-surface.left));
+        const localFlow=(modes[0].v*Math.sin(Math.PI*u)+
+          .33*modes[1].v*Math.sin(2*Math.PI*u))*rocking;
+        letter.driftVelocity+=(localFlow*size*23-letter.driftVelocity*7.5-letter.drift*30)*dt;
+        letter.drift=clamp(letter.drift+letter.driftVelocity*dt,-size*.25,size*.25);
+      }
+      const center=anchor+letter.drift;
+      const line=surface.yAt(center);
+      const leftWave=surface.yAt(center-size*.37),rightWave=surface.yAt(center+size*.37);
+      const slope=clamp((rightWave-leftWave)/(size*.74),-.29,.29);
+      const swell=Math.sin(clock*4.2-i*.62+opticalFlow*3.5);
+      const support=(leftWave+line*2+rightWave)*.25+lift*swell;
+      const pitch=clamp(slope*1.25*rocking+lift/size*.54*Math.cos(clock*4.2-i*.62),-.27,.27);
+      if(letter.y===null||!dt){
+        letter.y=support;letter.velocity=0;letter.pitch=pitch;
+      }else{
+        letter.velocity+=((support-letter.y)*117-letter.velocity*9.2)*dt;
+        letter.y+=letter.velocity*dt;
+        const lagLimit=size*.26;
+        if(Math.abs(letter.y-support)>lagLimit){
+          letter.y=support+clamp(letter.y-support,-lagLimit,lagLimit);
+          letter.velocity*=.35;
+        }
+        letter.pitch+=(pitch-letter.pitch)*(1-Math.exp(-dt*6.4));
+      }
+      const stagger=(i/(row.length-1)-.5)*size*.16*changing;
+      const draft=size*(.023+(1-rocking)*.006);
+      const bodyY=letter.y-letter.foot*size-draft+state.depth*size*1.26+stagger;
+      return {image:letter.image,size,center,line,slope,float:bodyY-line,bodyY,pitch:letter.pitch,drift:letter.drift};
     });
-    if(newField)for(let i=0;i<3;i++){
-      const b=field[i];b.x=cx+scale*(i-1)*1.3;b.y=cy+scale*(.65-i*.75);
-      b.r=scale*(.24+i*.055);b.z=.84+i*.06;b.speed=10+i*3;b.vy=-b.speed;
-    }
   }
-  const physics={gx:0,gy:-1,tx:0,ty:-1,spin:0,lastAngle:0,lastSensor:0,hasTilt:false,textX:0,textY:0,textVX:0,textVY:0,transportX:0,transportY:0};
-  function tiltGravity(beta,gamma,screenAngle=0){
-    const b=beta*DEG,g=gamma*DEG,a=screenAngle*DEG;
-    const x=Math.cos(b)*Math.sin(g),y=-Math.sin(b);
-    const sx=x*Math.cos(a)+y*Math.sin(a),sy=-x*Math.sin(a)+y*Math.cos(a);
-    const length=Math.hypot(sx,sy);
-    return length>.08?{x:sx/length,y:sy/length}:null;
+  function surfaceFold(u,depth,time){
+    const x=u-opticalFlow*.85;
+    const roll=TAU*(1.72*x-depth*.94)-time*.34;
+    const curl=Math.sin(TAU*(2.55*x+depth*1.31)+time*.24);
+    return Math.sin(roll+.88*curl)+.31*Math.sin(TAU*(4.2*x-depth*1.7)+time*.4);
   }
-  function updatePhysics(dt){
-    let tx=0,ty=-1;
-    if(sensor&&physics.hasTilt){tx=physics.tx;ty=physics.ty;}
-    else {tx=Math.sin(current*DEG);ty=-Math.cos(current*DEG);}
-    const follow=1-Math.exp(-dt*3);
-    physics.gx+=(tx-physics.gx)*follow;physics.gy+=(ty-physics.gy)*follow;
-    const rotation=clamp((current-physics.lastAngle)*DEG,-.4,.4);
-    physics.lastAngle=current;
-    physics.spin=clamp(physics.spin*Math.exp(-dt*2.1)+rotation*1.5,-2.4,2.4);
-    const targetX=physics.gx*scale*.42,targetY=(physics.gy+1)*scale*.25;
-    physics.textVX+=((targetX-physics.textX)*8-physics.textVX*4)*dt;
-    physics.textVY+=((targetY-physics.textY)*8-physics.textVY*4)*dt;
-    physics.textX+=physics.textVX*dt;physics.textY+=physics.textVY*dt;
-    physics.transportX+=physics.gx*18*dt;physics.transportY+=physics.gy*18*dt;
-  }
-  function stepField(dt){
-    updatePhysics(dt);
-    // Buoyancy accelerates toward a terminal velocity; drag damps lateral motion.
-    for(const b of field){
-      const responsiveness=.75+18/(b.r+14);
-      const swirlX=-(b.y-cy)*physics.spin*.32,swirlY=(b.x-cx)*physics.spin*.32;
-      const noiseFollow=1-Math.exp(-dt*2);
-      b.noiseX+=((Math.random()-.5)*90-b.noiseX)*noiseFollow;
-      b.noiseY+=((Math.random()-.5)*90-b.noiseY)*noiseFollow;
-      const targetVX=physics.gx*b.speed*1.65+swirlX+b.noiseX*motionStrength+Math.sin(clock*.8+b.phase)*7;
-      const targetVY=physics.gy*b.speed*1.65+swirlY+b.noiseY*motionStrength;
-      b.vx+=(targetVX-b.vx)*dt*responsiveness;
-      b.vy+=(targetVY-b.vy)*dt*responsiveness;
-      b.x+=b.vx*dt;b.y+=b.vy*dt;
-      if(b.y < -b.r-100)b.y=H+b.r+100;
-      if(b.y > H+b.r+100)b.y=-b.r-100;
-      if(b.x < -b.r-60)b.x=W+b.r+50;
-      if(b.x > W+b.r+60)b.x=-b.r-50;
-      b.turn=Math.atan2(b.vy,b.vx);
-      b.sv+=(-b.sq*20-b.sv*5+Math.sin(clock*2+b.phase)*motionStrength*2)*dt;b.sq+=b.sv*dt;
-    }
-    for(let i=0;i<field.length;i++)for(let j=i+1;j<field.length;j++){
-      const a=field[i],b=field[j];if(Math.abs(a.z-b.z)>.36)continue;
-      let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),limit=(a.r+b.r)*.92;
-      if(d>=limit||d<.01)continue;
-      dx/=d;dy/=d;const pressure=(limit-d)/limit;
-      const impulse=Math.min(20,(limit-d)*2.4)*dt;
-      a.vx-=dx*impulse;b.vx+=dx*impulse;a.vy-=dy*impulse*.3;b.vy+=dy*impulse*.3;
-      a.sv+=pressure*dt*7;b.sv+=pressure*dt*7;
-      a.turn=b.turn=Math.atan2(dy,dx);
-    }
-  }
-  function membrane(b,foreground=false){
-    if(b.y+b.r<0||b.y-b.r>H)return;
-    ctx.save();ctx.translate(b.x,b.y);ctx.rotate(b.turn||0);
-    const squeeze=clamp(b.sq||0,-.12,.17);
-    ctx.scale(1-squeeze,1+squeeze);
-    const r=b.r,bright=b.carrier?.67:mix(.46,.87,b.z);
-    const skin=ctx.createRadialGradient(-r*.25,-r*.3,r*.03,0,0,r);
-    skin.addColorStop(0,'rgba(230,237,245,.004)');skin.addColorStop(.72,'rgba(210,222,235,.008)');
-    skin.addColorStop(.91,'rgba(225,233,242,.025)');skin.addColorStop(.97,`rgba(229,238,248,${bright*.16})`);skin.addColorStop(1,'rgba(230,237,245,.015)');
-    ctx.fillStyle=skin;ctx.beginPath();ctx.arc(0,0,r,0,TAU);ctx.fill();
-    const sheen=ctx.createRadialGradient(-r*.38,-r*.48,0,-r*.22,-r*.3,r*.91);
-    sheen.addColorStop(0,'rgba(245,249,255,.075)');sheen.addColorStop(.32,'rgba(228,238,251,.018)');sheen.addColorStop(.7,'rgba(220,232,248,0)');sheen.addColorStop(1,'rgba(220,232,248,0)');
-    ctx.fillStyle=sheen;ctx.fill();
-    const rim=ctx.createLinearGradient(-r,-r,r,r);
-    rim.addColorStop(0,`rgba(251,253,255,${bright})`);rim.addColorStop(.22,'rgba(164,181,200,.12)');
-    rim.addColorStop(.47,'rgba(105,120,140,.035)');rim.addColorStop(.7,`rgba(225,235,248,${bright*.7})`);rim.addColorStop(1,'rgba(220,230,240,.15)');
-    ctx.strokeStyle=rim;ctx.lineWidth=foreground?.65:.95;ctx.stroke();
-    // Broken silver reflections, concentrated on the edge rather than a solid ring.
-    for(let j=0;j<7;j++){
-      const start=j*.89+b.phase*.12;
-      const bend=.018*Math.sin(clock*.32+b.phase+j*2);
-      ctx.beginPath();ctx.ellipse(-r*.015,r*.018,r*(.93+bend),r*(.95-bend),0,start,start+.17+rand(j,b.id||0)*.25);
-      ctx.strokeStyle=`rgba(235,243,253,${bright*(j%3===0?.55:.17)})`;ctx.lineWidth=j%3===0?1.7:.7;ctx.stroke();
-    }
-    ctx.beginPath();ctx.ellipse(-r*.31,-r*.68,r*.2,r*.055,-.45,0,TAU);
-    ctx.fillStyle=`rgba(255,255,255,${bright*.4})`;ctx.fill();
-    ctx.beginPath();ctx.arc(0,0,r*.86,.7,1.8);ctx.strokeStyle=`rgba(220,232,247,${bright*.25})`;ctx.lineWidth=1.3;ctx.stroke();
-    // Irregular reflected ribbons imitate the broken bright clouds on a soap film.
-    for(let band=0;band<4;band++){
-      ctx.beginPath();
-      for(let n=0;n<=28;n++){
-        const a=-2.6+band*1.59+n*.027;
-        const rr=r*(.88+.025*Math.sin(n*.18+b.phase+band)+.008*Math.sin(n*.4+band));
-        const x=Math.cos(a)*rr,y=Math.sin(a)*rr;
-        if(!n)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  function renderLetters(surface,letters,reflection){
+    ctx.save();ctx.clip(reflection?surface.water:surface.air);
+    for(const {image,size,center,line,slope,float,bodyY,pitch} of letters){
+      if(reflection){
+        const farthest=-float,closest=Math.max(0,farthest-size);
+        const height=farthest-closest;
+        if(height<=0)continue;
+        const phase=center*.034-clock*2.25;
+        const stretch=1.53+.18*Math.sin(phase)+Math.min(.24,Math.abs(slope)*.48);
+        const rows=Math.max(1,Math.ceil(height/.85)),sourceStep=height/rows;
+        ctx.save();
+        // Orient each uninterrupted scanline to the local tangent of the water.
+        ctx.transform(1,2*slope-pitch,0,-1,center,line);
+        let near=closest*stretch;
+        for(let k=0;k<rows;k++){
+          const depth=closest+(k+.5)*sourceStep,next=closest+(k+1)*sourceStep,u=depth/size;
+          const bend=surfaceFold(.5+center/(2*Math.hypot(halfW,halfH)),u*.65,clock)
+            +.19*Math.sin(phase*1.67+depth*.19);
+          const sway=(bend*.205+slope*.72)*size*Math.min(1,u*2.45);
+          const width=size*(1+.14*Math.sin(phase+depth*.092)*Math.min(1,u*3));
+          const far=next*stretch+Math.sin(next*.074+phase)*Math.min(next*.17,size*.083);
+          const crest=.5+.5*Math.sin(phase*1.2-depth*.224);
+          ctx.globalAlpha=(.84-.17*u)*(1-.36*crest**5*smooth(.04,.28,u));
+          ctx.drawImage(image,0,128*(farthest-next)/size,128,128*sourceStep/size,
+            sway-width/2,-far,width,far-near+.3);
+          near=far;
+        }
+        ctx.restore();
+        continue;
       }
-      ctx.strokeStyle=`rgba(233,240,249,${bright*(band%2?.20:.38)})`;
-      ctx.lineWidth=Math.max(.7,r*.024);ctx.stroke();
-    }
-    ctx.restore();
-  }
-  function lift(delta){
-    // A wide reading shelf at each endpoint; no phase clock advances while held.
-    const u=Math.max(0,(Math.abs(delta)-26)/126);
-    return -Math.sign(delta)*(H+scale*4)*Math.pow(u,3);
-  }
-  function carrierScene(angle,t){
-    const scene=[],leg=Math.floor(angle/180),phase=angle-leg*180;
-    for(let cell=0;cell<6;cell++){
-      const middle=88+(cell%3)*3,progress=smooth(middle-18,middle+18,phase);
-      const k=leg+(progress>=.5?1:0),which=((k%2)+2)%2;
-      const i=which?5-cell:cell,row=Math.floor(cell/3),col=cell%3,drift=cell*1.71;
-      const anchorX=cx+(col-1)*scale*1.65,anchorY=cy+(row-.5)*scale*1.65;
-      // A shared buoyant current keeps the phrase together; passing bubbles
-      // gently lift and nudge each character along their own rising paths.
-      let pullX=0,pullY=0,weight=0;
-      for(const bubble of field){
-        const dx=bubble.x-anchorX,dy=bubble.y-anchorY;
-        const reach=scale*1.3+bubble.r;
-        const influence=Math.exp(-(dx*dx+dy*dy)/(reach*reach))* (.35+bubble.z*.65);
-        pullX+=influence*dx/reach;
-        pullY+=influence*(.65+.35*Math.tanh(-dy/reach));
-        weight+=influence;
-      }
-      const norm=1+weight;
-      const sway=Math.sin(t*.48+drift*.32);
-      const buoyancy=Math.sin(t*.56+drift*.28);
-      const x=anchorX+physics.textX+scale*(Math.sin(t*.32)*.24+sway*.13+pullX/norm*.32);
-      const y=anchorY+physics.textY+scale*(Math.sin(t*.37+.5)*.30+buoyancy*.18-pullY/norm*.38);
-      const cover=0,flip=1;
-      scene.push({id:cell,i,which,k,x,y,r:scale*.94,phase:drift,z:.55,carrier:true,
-        turn:.055*Math.sin(t*.32)+.045*Math.sin(t*.48+drift*.32)+pullX/norm*.08,sq:.016*Math.sin(t*.65+drift),bend:0,cover,progress,flip});
-    }
-    return scene;
-  }
-  let movingOccluders=[];
-  function movingFoam(angle,t){
-    const result=[],leg=Math.floor(angle/180),travel=(H+scale*7)/260;
-    for(let k=leg-1;k<=leg+1;k++)for(let cell=0;cell<6;cell++){
-      const phase=angle-k*180,middle=88+(cell%3)*3;
-      const carrier=carriers[cell];
-      for(let j=0;j<5;j++){
-        const offset=(j-2)*scale*.27;
-        result.push({id:900+cell*5+j,k,cell,
-          x:carrier.x+offset+Math.sin(phase*.045+cell+j)*scale*.045+physics.gx*scale*.15*Math.sin((phase-middle)*.035),
-          y:carrier.y-(phase-middle)*travel+Math.sin(j*2.4+cell)*scale*.13,
-          r:scale*(.24+rand(cell*5+j,211)*.18),phase:cell*1.71+j,
-          z:.96,sq:Math.sin(t*.7+j)*.045,turn:.08*Math.sin(t*.4+j)});
-      }
-    }
-    return result;
-  }
-  const liquidLayers=Array.from({length:6},()=>{
-    const canvas=document.createElement('canvas');canvas.width=canvas.height=384;
-    return {canvas,ctx:canvas.getContext('2d')};
-  });
-  function stretchedY(y,front,amount){
-    const lo=Math.tanh(-front/32),hi=Math.tanh((192-front)/32);
-    return y+amount*22*(Math.tanh((y-front)/32)-lo-(hi-lo)*y/192);
-  }
-  function drawInk(b){
-    const size=scale*1.24,leg=Math.floor(current/180),phase=current-leg*180;
-    const middle=88+(b.id%3)*3,front=-(phase-middle)*(H+scale*7)/260;
-    const contactAmount=Math.exp(-Math.pow(front/(scale*.95),2));
-    const layer=liquidLayers[b.id],g=layer.ctx;
-    g.clearRect(0,0,384,384);g.globalAlpha=1;
-    const seam=front+Math.sin(phase*.10+b.id*1.7)*scale*.025;
-    const frontPx=96+front*192/size;
-    for(let sy=0;sy<192;sy++){
-      const v=((sy+.5)/192-.5)*size;
-      const side=v>=seam?1:0;
-      const which=((leg+side)%2+2)%2,index=which?5-b.id:b.id;
-      const contact=Math.exp(-Math.pow((v-front)/(scale*.7),2));
-      const wave=Math.sin(v/scale*5+phase*.10+b.id*1.7);
-      const shift=contact*(38*wave+12*Math.sin(v/scale*10-phase*.07));
-      const stretch=1+contact*(.4*wave+.14*Math.cos(v/scale*9+b.id));
-      const y0=stretchedY(sy,frontPx,contactAmount);
-      const y1=stretchedY(sy+1,frontPx,contactAmount);
-      // Contiguous opaque strips stretch the actual strokes; no erasing or crossfade.
-      g.save();g.globalAlpha=1;g.translate(192+shift,96+y0);g.scale(stretch,1);
-      if(which){
-        g.translate(0,y1-y0);g.scale(-1,-1);
-        g.drawImage(glyphs[which][index],0,191-sy,192,1,-96,0,192,y1-y0+.08);
-      }else g.drawImage(glyphs[which][index],0,sy,192,1,-96,0,192,y1-y0+.08);
-      g.restore();
-    }
-    ctx.save();ctx.globalAlpha=1;ctx.translate(b.x,b.y);ctx.rotate(b.turn);
-    ctx.drawImage(layer.canvas,-size,-size,size*2,size*2);
-    // Small silver droplets separate from the liquid edge and rise with the film.
-    if(contactAmount>.02)for(let j=0;j<8;j++){
-      const seed=b.id*4+j,u=rand(seed,304),r=scale*(.025+u*.04);
-      const x=scale*(rand(seed,305)-.5)*.85+Math.sin((frozenClock===null?clock:frozenClock)*.6+seed)*scale*.025;
-      const y=front-scale*(.12+u*.48);
-      ctx.globalAlpha=contactAmount;
-      ctx.save();ctx.translate(x,y);ctx.rotate(.2*Math.sin(seed));
-      ctx.scale(.8,1.2+u);
-      const film=ctx.createRadialGradient(-r*.3,-r*.4,0,0,0,r);
-      film.addColorStop(0,'rgba(235,247,255,.025)');
-      film.addColorStop(.8,'rgba(220,240,255,.006)');
-      film.addColorStop(1,'rgba(230,246,255,.06)');
-      ctx.fillStyle=film;ctx.beginPath();ctx.arc(0,0,r,0,TAU);ctx.fill();
-      const rim=ctx.createLinearGradient(-r,-r,r,r);
-      rim.addColorStop(0,'rgba(245,252,255,.7)');
-      rim.addColorStop(.35,'rgba(180,213,235,.12)');
-      rim.addColorStop(.7,'rgba(225,243,255,.45)');
-      rim.addColorStop(1,'rgba(210,233,250,.16)');
-      ctx.strokeStyle=rim;ctx.lineWidth=.65;ctx.stroke();
-      ctx.beginPath();ctx.arc(0,0,r*.78,-2.5,-1.45);
-      ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=.8;ctx.stroke();
+      ctx.save();
+      ctx.transform(1,pitch,0,1,center,bodyY);
+      ctx.drawImage(image,-size/2,0,size,size);
       ctx.restore();
     }
     ctx.restore();
   }
-  function surroundingFoam(angle,t){
-    const bubbles=[],leg=Math.floor(angle/180),count=mobileRendering?44:68;
-    for(let k=leg-1;k<=leg+2;k++){
-      const delta=angle-k*180,y0=cy+lift(delta),which=((k%2)+2)%2;
-      if(y0 < -scale*8||y0>H+scale*8)continue;
-      const bend=smooth(26,120,Math.abs(delta));
-      for(let i=0;i<count;i++){
-        const id=i+which*count,phase=rand(id,83)*TAU;
-        // Loose banks of bubbles surround the whole sentence, with an open reading space.
-        let x=(rand(id,80)-.5)*scale*7.1;
-        let y=(rand(id,81)-.5)*scale*6.5;
-        if(Math.abs(x)<scale*2.65&&Math.abs(y)<scale*1.65){
-          if(i%2)x=Math.sign(x||1)*scale*(2.8+rand(id,84)*.6);
-          else y=Math.sign(y||1)*scale*(1.85+rand(id,85)*1.3);
-        }
-        const plumeX=(rand(id,86)-.5)*Math.min(W*.88,scale*8);
-        const plumeY=(rand(id,87)-.35)*scale*7;
-        x=mix(x*1.12,plumeX,bend*.7);y=mix(y*1.85,plumeY,bend*.75);
-        const driftX=Math.sin(t*(.20+rand(id,88)*.13)+phase)*scale*.09;
-        const driftY=Math.sin(t*(.24+rand(id,89)*.11)+phase)*scale*.09;
-        bubbles.push({id:id+100,x:cx+x+driftX,y:y0+y+driftY,
-          r:scale*(.07+rand(id,90)**2*.31),phase,z:rand(id,91),
-          turn:Math.sin(t*.3+phase)*.08,sq:Math.sin(t*.65+phase)*.025});
+  const waterOptics=document.createElement('canvas');
+  waterOptics.width=mobileRendering?164:224;
+  waterOptics.height=mobileRendering?92:122;
+  const waterPixels=waterOptics.getContext('2d');
+  const lightMap=waterPixels.createImageData(waterOptics.width,waterOptics.height);
+  let lastOptics=-Infinity;
+
+  function updateWaterOptics(surface,radius){
+    if(clock-lastOptics<1/26)return;
+    lastOptics=clock;
+    const {width,height,data}=lightMap;
+    const time=clock*(reduced?.32:1);
+    const motion=modes.reduce((sum,mode)=>sum+Math.abs(mode.y)+Math.abs(mode.v)*.09,0);
+    const steepness=.64+Math.min(.57,motion*1.65);
+    const du=1/width,dv=1/height;
+    const opticalDepth=radius*1.28,top=-radius*.28;
+    const waterline=new Float32Array(width),tilt=new Float32Array(width);
+    const lighting=new Float32Array(width);
+    for(let x=0;x<width;x++){
+      const px=radius*(2*(x+.5)*du-1);
+      const u=x*du;
+      lighting[x]=.18*Math.exp(-(((u-.31)*3.8)**2))+.105*Math.exp(-(((u-.77)*5)**2));
+      waterline[x]=surface.yAt(px);
+      tilt[x]=(surface.yAt(px+3)-surface.yAt(px-3))/6;
+    }
+    function heightAt(u,v){
+      const swell=surfaceFold(u,v*.87,time);
+      const small=Math.sin(TAU*((u-opticalFlow*.48)*5.1-v*3.7)+swell*.62+time*.65);
+      return swell*.037+small*.009
+        +.004*Math.sin(TAU*(u*8.5+v*5.7)+time*1.8+small*.78);
+    }
+    for(let y=0;y<height;y++){
+      const v=y*dv,worldY=top+(y+.5)*dv*opticalDepth;
+      for(let x=0;x<width;x++){
+        const u=x*du,h=heightAt(u,v);
+        const depth=Math.max(0,worldY-waterline[x]);
+        const depthLoss=Math.exp(-depth/(radius*.58));
+        const edgeSpread=5+radius*.017;
+        const edgeWeight=Math.exp(-depth/edgeSpread);
+        const edgeLight=.5+.5*Math.sin(TAU*(u*3.1+opticalFlow*.26)+tilt[x]*5.8+time*.7);
+        const nx=(h-heightAt(u+du,v))/du*steepness;
+        const ny=(h-heightAt(u,v+dv))/dv*steepness;
+        const nz=1/Math.sqrt(1+nx*nx+ny*ny);
+        // Surface normals reflect a broad light source and a smaller bright source.
+        const broad=Math.max(0,(nx*-.26+ny*.38+.888)*nz);
+        const glint=Math.max(0,(nx*.31-ny*.38+.871)*nz);
+        const fresnel=(1-nz)**2;
+        // The broad specular response relaxes continuously into deeper water.
+        const edgeBlend=.18+.82*smooth(0,edgeSpread*.52,depth);
+        const reflectedLight=(.078*broad**5+.28*glint**21+.048*fresnel)*depthLoss;
+        const surfaceLight=edgeWeight*(.021+edgeLight**3*lighting[x])
+          *Math.min(1,.48+Math.abs(nx)*.36);
+        const light=(reflectedLight+surfaceLight)*edgeBlend;
+        const i=(y*width+x)*4;
+        data[i]=data[i+1]=data[i+2]=242;
+        data[i+3]=Math.round(255*light);
       }
     }
-    return bubbles;
+    waterPixels.putImageData(lightMap,0,0);
   }
-  function transitionStream(angle,t){
-    const bubbles=[],leg=Math.floor(angle/180),count=mobileRendering?76:116;
-    for(let k=leg-1;k<=leg+1;k++){
-      const q=(angle-k*180)/180;
-      for(let i=0;i<count;i++){
-        const start=.07+rand(i,102)*.36,end=.62+rand(i,103)*.29;
-        const u=(q-start)/(end-start),r=4+rand(i,104)**2*Math.min(23,W*.055);
-        const y=H+r+35-u*(H+r*2+70);
-        if(y < -r-5||y > H+r+5)continue;
-        const phase=rand(i,105)*TAU;
-        bubbles.push({id:i+300,x:W*(.06+rand(i,106)*.88)+Math.sin(u*2+phase)*W*.035+Math.sin(t*.3+phase)*2,
-          y:y+Math.sin(t*.24+phase)*3,r,phase,z:rand(i,107),
-          sq:Math.sin(u*3+phase)*.035,turn:Math.sin(u+phase)*.12});
+  function drawSurfaceSkin(surface){
+    const {left,right,yAt,air}=surface;
+    const span=right-left,shortSide=Math.min(halfW,halfH);
+    const bandDepth=clamp(shortSide*.069,9,32);
+    const motion=Math.min(1,Math.abs(modes[0].v)*.48+Math.abs(modes[1].v)*.32);
+    const facets=116,front=[],back=[];
+    const shine=ctx.createLinearGradient(left,0,right,0);
+    const slopeStep=span*.012;
+    for(let i=0;i<=facets;i++){
+      const u=i/facets,x=left+u*span,y=yAt(x);
+      const slope=(yAt(x+slopeStep)-yAt(x-slopeStep))/(2*slopeStep);
+      const curl=surfaceFold(u,.09,clock*(reduced?.35:1));
+      const width=bandDepth*(.62+.38*curl+motion*.28);
+      front.push([x,y+.45]);
+      back.push([x,y-width]);
+      if(i%4===0){
+        const angle=Math.atan(slope+curl*.24);
+        const glint=(.5+.5*Math.cos(angle*5.6+.72))**4;
+        const key=Math.exp(-(((u-.28)*4.3)**2));
+        const fill=Math.exp(-(((u-.74)*5.1)**2));
+        const highlight=glint*(.13+key*.36+fill*.21);
+        shine.addColorStop(u,`rgba(247,247,247,${.018+highlight})`);
       }
     }
-    return bubbles;
-  }
-  function driftFoam(b){
-    let m=foamMotion.get(b.id);
-    if(!m){m={x:0,y:0,vx:0,vy:0,phase:Math.random()*TAU};foamMotion.set(b.id,m);}
-    return {...b,x:b.x+m.x,y:b.y+m.y,sq:(b.sq||0)+Math.sin(clock*1.7+m.phase)*.025};
-  }
-  function stepFoam(dt){
-    for(const m of foamMotion.values()){
-      const drag=1-Math.exp(-dt*2.5);
-      const vx=physics.gx*12+Math.sin(clock*1.1+m.phase)*18+(Math.random()-.5)*35*motionStrength;
-      const vy=physics.gy*12+Math.cos(clock*.9+m.phase)*18+(Math.random()-.5)*35*motionStrength;
-      m.vx+=(vx-m.vx)*drag;m.vy+=(vy-m.vy)*drag;
-      m.x=clamp(m.x+m.vx*dt,-scale*.7,scale*.7);
-      m.y=clamp(m.y+m.vy*dt,-scale*.7,scale*.7);
-    }
-  }
-  const lensSnapshot=document.createElement('canvas'),lensCtx=lensSnapshot.getContext('2d',{alpha:false});
-  let refractionEnabled=true,lensCount=0,lastLenses=[];
-  function refract(b){
-    if(!refractionEnabled||b.r<10||!carriers.some(c=>Math.abs(c.x-b.x)<b.r+scale*.66&&Math.abs(c.y-b.y)<b.r+scale*.66))return;
-    const r=b.r*.97,sq=clamp(b.sq||0,-.12,.17),rx=r*(1-sq),ry=r*(1+sq);
-    if(b.x+rx<0||b.x-rx>W||b.y+ry<0||b.y-ry>H)return;
-    lensCount++;lastLenses.push({x:b.x,y:b.y,r:Math.max(rx,ry)});
-    ctx.save();ctx.beginPath();ctx.ellipse(b.x,b.y,rx,ry,b.turn||0,0,TAU);ctx.clip();
-    // Replace the original rear image inside the membrane with refracted samples.
-    // This prevents a second, undistorted copy of the text showing through.
-    const step=mobileRendering?2.5:2,extent=Math.max(rx,ry)*1.05;
-    for(let y=b.y-extent;y<b.y+extent;y+=step){
-      const ny=(y+step*.5-b.y)/ry;
-      const bulge=Math.max(0,1-ny*ny),magnify=1.02+bulge*.34;
-      const width=extent*2+2;
-      const shiftX=r*.05*bulge*Math.cos(b.phase||0);
-      const shiftY=r*.04*bulge;
-      const sx=b.x-width/(2*magnify)+shiftX;
-      const sy=b.y+(y-b.y)/magnify+shiftY;
-      ctx.drawImage(lensSnapshot,sx*DPR,sy*DPR,width/magnify*DPR,step/magnify*DPR,
-        b.x-width/2,y,width,step+.12);
-    }
+    const skin=new Path2D();
+    front.forEach(([x,y],i)=>i?skin.lineTo(x,y):skin.moveTo(x,y));
+    for(let i=back.length-1;i>=0;i--)skin.lineTo(...back[i]);
+    skin.closePath();
+    ctx.save();ctx.clip(air);ctx.clip(skin);
+    const radius=Math.hypot(halfW,halfH);
+    ctx.drawImage(waterOptics,-radius,-radius*.54,radius*2,radius*1.28);
+    ctx.globalCompositeOperation='screen';
+    const level=surface.level;
+    const face=ctx.createLinearGradient(0,level-bandDepth,0,level+bandDepth*.3);
+    face.addColorStop(0,'rgba(12,12,12,.94)');
+    face.addColorStop(.55,'rgba(85,85,85,.14)');
+    face.addColorStop(.84,'rgba(180,180,180,.06)');
+    face.addColorStop(1,'rgba(14,14,14,.01)');
+    ctx.fillStyle=shine;ctx.fill(skin);
+    ctx.globalCompositeOperation='source-over';
+    ctx.fillStyle=face;ctx.fill(skin);
     ctx.restore();
   }
-
-  function render(angle){
+  function drawWater(surface,letters){
+    const {water}=surface;
+    const radius=Math.hypot(halfW,halfH);
+    ctx.save();ctx.clip(water);
+    updateWaterOptics(surface,radius);
+    ctx.drawImage(waterOptics,-radius,-radius*.28,radius*2,radius*1.28);
+    renderLetters(surface,letters,true);
+    ctx.restore();
+    drawSurfaceSkin(surface);
+  }
+  function paint(angle,dt=0){
     if(!ready)return;
-    ctx.setTransform(DPR,0,0,DPR,0,0);ctx.globalAlpha=1;ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
-    const t=frozenClock===null?clock:frozenClock;
-    carriers=carrierScene(angle,t);lastScene=carriers;
-    const padding=scale*3,spanX=W+padding*2,spanY=H+padding*2;
-    const transported=surroundingFoam(angle,t).map(b=>({...b,
-      x:((b.x+physics.transportX+padding)%spanX+spanX)%spanX-padding,
-      y:((b.y+physics.transportY+padding)%spanY+spanY)%spanY-padding}));
-    const foam=[...transported,...transitionStream(angle,t)].map(driftFoam);
-    field.filter(b=>b.z<.7).forEach(b=>membrane(b));
-    foam.filter(b=>b.z<.68).forEach(b=>membrane(b));
-    // Clip only at the viewport: sentences really travel beyond its boundaries.
-    carriers.forEach(b=>drawInk(b));
-    movingOccluders=movingFoam(angle,t).map(driftFoam);
-    lensCtx.setTransform(1,0,0,1,0,0);lensCtx.drawImage(canvas,0,0);
-    lensCount=0;lastLenses=[];
-    const foreground=[...foam.filter(b=>b.z>=.68),...field.filter(b=>b.z>=.7),...movingOccluders].sort((a,b)=>a.z-b.z);
-    for(const b of foreground){refract(b);membrane(b,true);}
-
+    const view=sensor&&hasDisplayRoll?displayRoll:-angle*DEG;
+    const vesselAngle=-view/DEG;
+    const surface=makeSurface(vesselAngle),state=stageState(angle);
+    const letters=floatingLetters(surface,state,dt);
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+    ctx.save();ctx.translate(cx,cy);
+    // In screen coordinates the glass walls stay fixed while gravity turns underneath.
+    ctx.rotate(view);
+    const glass=outline(surface.points);
+    ctx.save();ctx.clip(glass);
+    drawWater(surface,letters);
+    renderLetters(surface,letters,false);
+    ctx.restore();
+    ctx.restore();
+    frameState={angle,view,which:state.which,depth:state.depth,fill:surface.fill,
+      exposed:letters.map(({float,size})=>clamp(-float/size)),
+      letters:letters.map(({bodyY,pitch,line,drift})=>({bodyY,pitch,line,drift})),
+      wave:modes.map(m=>m.y),leftWater:surface.yAt(surface.left),rightWater:surface.yAt(surface.right)};
   }
-  const paint=render;
-  function resize(){
-    const oldW=W,oldH=H;
-    W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,mobileRendering?1.5:2);
-    if(oldW&&oldH&&(oldW!==W||oldH!==H))for(const b of field){b.x*=W/oldW;b.y*=H/oldH;}
-    canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);
-    lensSnapshot.width=canvas.width;lensSnapshot.height=canvas.height;
-    canvas.style.width=W+'px';canvas.style.height=H+'px';
-    if(ready){rebuild();paint(current)}
-  }
-  function stage(p){const a=p*360,phase=a%180;
-    if(phase<27||phase>153)return Math.round(a/180)%2?'02 / 我怕你被傷害・倒置':'01 / 你眼光也太差';
-    return '◌ / 泡膜掃過・折射換句';
+  function stage(){
+    const state=stageState(current);
+    if(state.depth>=1)return '水線下';
+    if(state.depth>.01)return state.travel<90?'沉入水面':'浮出水面';
+    return state.which?'02 / '+DATA.target:'01 / '+DATA.source;
   }
   function updateUI() {
-    $('angle').textContent=current.toFixed(1).padStart(5,'0')+'\u00b0';
-    const displayed=Math.abs(current-360)<.02?360:cycle(current);
+    const displayed=current>0&&Math.abs(current/360-Math.round(current/360))<.00005?360:cycle(current);
     $('angle').textContent=displayed.toFixed(1).padStart(5,'0')+'°';
     if(!scrubbing)$('scrub').value=displayed;
     $('scrub').style.setProperty('--progress',(displayed/3.6)+'%');
-    $('stage').textContent=stage(cycle(current)/360);
+    $('stage').textContent=stage();
     $('play').textContent=auto?UI.pause:UI.play;
     $('gyro').textContent=sensor?UI.gyroOff:UI.gyro;
     $('mode').textContent=sensor?UI.modeGyro:auto?UI.modeAuto:UI.modeManual;
   }
   function say(message) {$('status').textContent=message;}
   function detachSensor() {
-    sensor=false;physics.hasTilt=false;sensorTextAnchor=null;prevQ=null;rawHeading=null;clearTimeout(timeoutID);
+    sensor=false;hasDisplayRoll=false;resetRoll();prevQ=null;rawHeading=null;clearTimeout(timeoutID);
     window.removeEventListener('deviceorientation',onOrientation);
   }
   function manual(angle,immediate=false) {
     auto=false;textHoldRemaining=0;detachSensor();target=Number.isFinite(Number(angle))?Number(angle):0;
-    if(immediate){current=target;physics.lastAngle=current;vel=0;paint(current);}
+    if(immediate){current=target;vel=0;resetWater();paint(current);}
     say(UI.manualHelp);updateUI();
   }
   function startAuto() {
     detachSensor();
-    autoOrigin=current;autoBegin=performance.now();filteredPlaybackRate=pursuitPlaybackRate;
-    textHoldRemaining=Math.abs(current/180-Math.round(current/180))<.00001?TEXT_HOLD_SECONDS:0;
+    textHoldRemaining=Math.abs(current/180-Math.round(current/180))<.00001?readingHold:0;
     auto=true;
     say(UI.previewHelp);updateUI();
   }
@@ -475,8 +509,8 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
       if(textHoldRemaining>0)textHoldRemaining=Math.max(0,textHoldRemaining-dt);
       else{
         const boundary=direction>0?(Math.floor(target/180)+1)*180:(Math.ceil(target/180)-1)*180;
-        const next=target+dt*9*direction;
-        if(direction>0?next>=boundary:next<=boundary){target=boundary;textHoldRemaining=TEXT_HOLD_SECONDS;}
+        const next=target+dt*29*direction;
+        if(direction>0?next>=boundary:next<=boundary){target=boundary;textHoldRemaining=readingHold;}
         else target=next;
       }
     }
@@ -484,25 +518,22 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     const omega=20,decay=Math.exp(-omega*dt),err=current-target,t=(vel+omega*err)*dt;
     current=target+(err+t)*decay;vel=(vel-omega*t)*decay;
     if(Math.abs(current-target)<.0005&&Math.abs(vel)<.005){current=target;vel=0;}
-    // Only rotation advances physics, deformation and visual drift.
-    const angularSpeed=dt>0?Math.abs(current-previousAngle)/dt:0;
-    if(frozenClock===null&&angularSpeed>.08){
-      motionStrength=clamp(angularSpeed/45,.15,2);
-      const motionDt=dt*(reduced?.25:1);
-      clock+=motionDt;stepField(motionDt);stepFoam(motionDt);
-    }else physics.lastAngle=current;
-    paint(current);if(now-lastUI>50){updateUI();lastUI=now;}requestAnimationFrame(tick);
+    if(ready&&dt>0){
+      const steps=Math.ceil(dt*120);
+      for(let i=1;i<=steps;i++)stepWater(dt/steps,mix(previousAngle,current,i/steps),now);
+    }
+    paint(current,dt);if(now-lastUI>50){updateUI();lastUI=now;}requestAnimationFrame(tick);
   }
   $('play').addEventListener('click',()=>{
     if(auto){auto=false;target=current;vel=0;say(UI.paused);}else startAuto();
     updateUI();
   });
   $('reset').addEventListener('click',()=>{manual(0,true);say(UI.ready);});
-  $('scrub').addEventListener('input',e=>manual(e.target.value));
+  $('scrub').addEventListener('input',e=>manual(e.target.value,true));
   $('scrub').addEventListener('pointerdown',()=>{scrubbing=true;auto=false;detachSensor();});
   window.addEventListener('pointerup',()=>{scrubbing=false;});
   window.addEventListener('pointercancel',()=>{scrubbing=false;});
-  document.querySelectorAll('[data-angle]').forEach(b=>b.addEventListener('click',()=>manual(Number(b.dataset.angle))));
+  document.querySelectorAll('[data-angle]').forEach(b=>b.addEventListener('click',()=>manual(Number(b.dataset.angle),true)));
   window.addEventListener('keydown',e=>{
     if(['INPUT','TEXTAREA','SELECT','BUTTON','SUMMARY'].includes(e.target.tagName))return;
     if(e.code==='Space'){e.preventDefault();$('play').click();}
@@ -523,9 +554,23 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
   const qNow=new Float64Array(4),qPrevious=new Float64Array(4);
   function onOrientation(e) {
     if(!sensor||!Number.isFinite(e.beta)||!Number.isFinite(e.gamma))return;
-    const gravity=tiltGravity(e.beta,e.gamma,screen.orientation?.angle??window.orientation??0);
-    if(gravity){physics.tx=gravity.x;physics.ty=gravity.y;physics.hasTilt=true;}
-    physics.lastSensor=performance.now();
+    const beta=e.beta*DEG,gamma=e.gamma*DEG;
+    const screenAngle=(screen.orientation?.angle??window.orientation??0)*DEG;
+    const x=-Math.cos(beta)*Math.sin(gamma),y=-Math.sin(beta);
+    gravityStrength=Math.hypot(x,y);
+    if(gravityStrength>.12){
+      const nativeRoll=Math.atan2(x,-y),now=performance.now();
+      const elapsed=(now-rollSampleTime)/1000;
+      if(previousRoll!==null&&elapsed>0&&elapsed<.24){
+        const change=previousRoll-nativeRoll;
+        const rate=Math.atan2(Math.sin(change),Math.cos(change))/elapsed;
+        sampledSpeed+=(clamp(rate,-11,11)-sampledSpeed)*(1-Math.exp(-elapsed*24));
+      }else sampledSpeed=0;
+      previousRoll=nativeRoll;rollSampleTime=now;
+      const gx=x*Math.cos(screenAngle)+y*Math.sin(screenAngle);
+      const gy=-x*Math.sin(screenAngle)+y*Math.cos(screenAngle);
+      displayRoll=Math.atan2(gx,-gy);hasDisplayRoll=true;
+    }else resetRoll();
     if(!sensorGotData){sensorGotData=true;clearTimeout(timeoutID);say(UI.sensorHelp);}
     if(!Number.isFinite(e.alpha))return;
     let delta=0;
@@ -567,8 +612,8 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
         const result=await DeviceOrientationEvent.requestPermission();
         if(result!=='granted'){say(UI.denied);updateUI();return;}
       }
-      physics.hasTilt=false;physics.lastAngle=current;
-      sensor=true;sensorGotData=false;sensorTextAnchor=null;prevQ=null;rawHeading=null;
+      hasDisplayRoll=false;resetRoll();
+      sensor=true;sensorGotData=false;prevQ=null;rawHeading=null;
       accum=current;target=current;vel=0;
       window.addEventListener('deviceorientation',onOrientation,{passive:true});
       say(UI.waitSensor);updateUI();
@@ -579,13 +624,14 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
   }
   $('gyro').addEventListener('click',enableGyro);
   $('calibrate').addEventListener('click',()=>{
-    accum=0;physics.spin=0;physics.lastAngle=0;physics.textVX=physics.textVY=0;sensorTextAnchor=null;prevQ=null;rawHeading=null;target=0;current=0;vel=0;auto=false;paint(0);say(UI.calibrated);updateUI();
+    accum=0;prevQ=null;rawHeading=null;target=0;current=0;vel=0;auto=false;
+    resetWater();paint(0);say(UI.calibrated);updateUI();
   });
   $('axis').addEventListener('change',e=>{
-    sensorType=e.target.value;sensorTextAnchor=null;prevQ=null;rawHeading=null;accum=current;say(UI.axisChanged);
+    sensorType=e.target.value;prevQ=null;rawHeading=null;accum=current;say(UI.axisChanged);
   });
-  $('direction').addEventListener('change',e=>{direction=e.target.checked?-1:1;sensorTextAnchor=null;prevQ=null;rawHeading=null;accum=current;});
-  $('sensitivity').addEventListener('change',e=>{sensitivity=Number(e.target.value);sensorTextAnchor=null;accum=current;});
+  $('direction').addEventListener('change',e=>{direction=e.target.checked?-1:1;prevQ=null;rawHeading=null;accum=current;});
+  $('sensitivity').addEventListener('change',e=>{sensitivity=Number(e.target.value);accum=current;});
   function setClean(on) {
     clean=on;document.body.classList.toggle('clean',on);
     $('restore').hidden=!on||lockedForCapture;
@@ -603,7 +649,7 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
     }catch(_){say(UI.noFullscreen);}
   });
   document.addEventListener('visibilitychange',()=>{
-    last=performance.now();prevQ=null;rawHeading=null;
+    last=performance.now();prevQ=null;rawHeading=null;resetRoll();
     if(document.hidden){auto=false;target=current;vel=0;}
   });
   let resizeTimer;
@@ -611,23 +657,24 @@ details{pointer-events:auto;position:relative}summary{cursor:pointer;list-style:
 
 
 
-  Object.assign(UI,{title:'為你好 / 戀愛',subtitle:'轉到 180° 顯示第二句，360° 回到第一句。',gyro:'啟用旋轉感應',gyroOff:'停用旋轉感應',sensorHelp:'傾斜手機改變泡泡浮力方向；轉動時產生旋流與慣性，停止後逐漸穩定。',ready:'左右拖曳或滑動角度，讓小泡泡掃過文字，折射後逐漸換成第二句。',manualHelp:'左右拖曳可預覽旋轉浮力；手機請啟用旋轉感應，傾斜改變泡泡方向與慣性。',paused:'預覽已暫停，文字留在目前進度，泡泡停在當下。',previewHelp:'預覽中：小泡泡掃過筆畫，液態折射銜接下一句，每句保留閱讀停留。'});
+  Object.assign(UI,{
+    title:'為你好 / 比較',
+    subtitle:'轉動容器，讓兩句話在同一片水面浮沉。',
+    ready:'左右拖曳可讓容器翻轉，滑桿可直接定位角度。',
+    manualHelp:'拖曳畫面可看水的慣性與回盪，滑桿可直接定位角度。',
+    sensorHelp:'像轉動圓盤一樣翻轉手機，水面會朝現實中的低處流動。',
+    paused:'預覽已暫停，水面會逐漸平靜。',
+    previewHelp:'預覽中。每次翻轉半圈後會短暫停留。'
+  });
   document.querySelectorAll('[data-label]').forEach(el=>el.textContent=UI[el.dataset.label]||'');
   $('sourceText').textContent=DATA.source;$('targetText').textContent=DATA.target;
-  canvas.setAttribute('aria-label','泡泡承載你眼光也太差與我怕你被傷害；拖曳改變上浮進度');
-  $('scrub').setAttribute('aria-label','旋轉角度 0 至 360 度');
-  document.querySelector('.sr-only').textContent='0° 你眼光也太差；180° 我怕你被傷害，整句倒置；360° 回到第一句。';
-  window.vortex={getPhysics:()=>({...physics}),getBubbles:()=>field.map(({x,y,vx,vy,r})=>({x,y,vx,vy,r})),setAngle:a=>manual(a,true),setRefraction:on=>{refractionEnabled=!!on;paint(current)},getLenses:()=>lastLenses,getOccluders:()=>movingOccluders,getStats:()=>({lenses:lensCount,count:field.length,angle:current,target,width:W,height:H,sensor,auto,clock}),getSource:()=>DATA,setClean,
-    inspect:()=>carriers.map(({x,y,r,k,which,i,cover,progress,flip})=>({x,y,r,k,which,i,cover,progress,flip})),freezeTime:t=>{frozenClock=t;paint(current)}};
-  window.vortex.ready=(async()=>{
-    resize();
-    await document.fonts.load('700 90px "Noto Serif TC"',DATA.source+DATA.target).catch(()=>{});
-    say(UI.ready);updateUI();rebuild();ready=true;paint(current);
-    if(params.has('angle'))manual(Number(params.get('angle')),true);
-    if(lockedForCapture)setClean(true);
-  })();
+  if(lockedForCapture)setClean(true);else resize();
+  makeGlyphs();
+  ready=true;
+  if(params.has('angle'))manual(Number(params.get('angle')),true);
+  say(UI.ready);updateUI();paint(current);
+  window.comparison={inspect:()=>frameState&&{...frameState,wave:[...frameState.wave]}};
   requestAnimationFrame(tick);
-
 })();
 </script>
 </body>
