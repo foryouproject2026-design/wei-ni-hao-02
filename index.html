@@ -70,7 +70,8 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
 <script>(() => {
   'use strict';
   const $=id=>document.getElementById(id),DATA=JSON.parse($('stroke-data').textContent);
-  const canvas=$('art'),ctx=canvas.getContext('2d',{alpha:false});
+  const canvas=$('art'),screenContext=canvas.getContext('2d',{alpha:false});
+  const frame=document.createElement('canvas'),ctx=frame.getContext('2d',{alpha:false});
   const TAU=Math.PI*2,DEG=Math.PI/180;
   const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
   const mix=(a,b,t)=>a+(b-a)*t;
@@ -88,6 +89,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
   let displayRoll=0,targetRoll=0,hasDisplayRoll=false,gravityStrength=1;
   let resizePending=false;
   let previousRoll=null,rollSampleTime=0,sampledSpeed=0,waterSpeed=0;
+  let lastStrongRoll=-Infinity;
   let opticalFlow=0,opticalDrift=0;
   const fillRatio=.52,readingHold=2.2;
   const modes=[
@@ -110,7 +112,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     return path;
   }
   function resize(redraw=true){
-    W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,mobileRendering?1.6:2);
+    W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,mobileRendering?1.4:2);
     cx=W/2;cy=H/2;
     halfW=Math.max(1,cx);halfH=Math.max(1,cy);
     const screenShort=Math.min(screen.width,screen.height);
@@ -120,8 +122,8 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     letterSize=Math.min(reference*.67/Math.max([...DATA.source].length,[...DATA.target].length),71);
     geometry();
     const pixelWidth=Math.round(W*DPR),pixelHeight=Math.round(H*DPR);
-    if(canvas.width!==pixelWidth)canvas.width=pixelWidth;
-    if(canvas.height!==pixelHeight)canvas.height=pixelHeight;
+    if(frame.width!==pixelWidth)frame.width=pixelWidth;
+    if(frame.height!==pixelHeight)frame.height=pixelHeight;
     canvas.style.width=W+'px';canvas.style.height=H+'px';
     if(ready){lastOptics=-Infinity;if(redraw)paint(current);}
   }
@@ -478,6 +480,10 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     renderLetters(surface,letters,false);
     ctx.restore();
     ctx.restore();
+    // Swap only after water, letters and reflections have all been drawn.
+    if(canvas.width!==frame.width)canvas.width=frame.width;
+    if(canvas.height!==frame.height)canvas.height=frame.height;
+    screenContext.drawImage(frame,0,0);
     frameState={angle,view,which:state.which,depth:state.depth,fill:surface.fill,letterSize,
       exposed:letters.map(({float,size})=>clamp(-float/size)),
       letters:letters.map(({bodyY,pitch,line,drift})=>({bodyY,pitch,line,drift})),
@@ -574,14 +580,18 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
   function onOrientation(e) {
     if(!sensor||!Number.isFinite(e.beta)||!Number.isFinite(e.gamma))return;
     const beta=e.beta*DEG,gamma=e.gamma*DEG;
-    const x=-Math.cos(beta)*Math.sin(gamma),y=-Math.sin(beta);
+    const x=-Math.cos(beta)*Math.sin(gamma),y=-Math.sin(beta),now=performance.now();
     gravityStrength=Math.hypot(x,y);
+    let gravityDelta=null;
     if(gravityStrength>(previousRoll===null?.22:.13)){
-      const nativeRoll=Math.atan2(x,-y),now=performance.now();
+      const nativeRoll=Math.atan2(x,-y);
+      lastStrongRoll=now;
       const elapsed=(now-rollSampleTime)/1000;
+      gravityDelta=0;
       if(previousRoll!==null&&elapsed>0&&elapsed<.24){
         const change=previousRoll-nativeRoll;
-        const rate=Math.atan2(Math.sin(change),Math.cos(change))/elapsed;
+        gravityDelta=Math.atan2(Math.sin(change),Math.cos(change))/DEG;
+        const rate=gravityDelta*DEG/elapsed;
         sampledSpeed+=(clamp(rate,-11,11)-sampledSpeed)*(1-Math.exp(-elapsed*24));
       }else sampledSpeed=0;
       previousRoll=nativeRoll;rollSampleTime=now;
@@ -593,34 +603,31 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
       }
     }else resetRoll();
     if(!sensorGotData){sensorGotData=true;clearTimeout(timeoutID);say(UI.sensorHelp);}
-    if(!Number.isFinite(e.alpha))return;
     let delta=0;
-    if(sensorType==='heading'){
+    if(sensorType==='heading'&&Number.isFinite(e.alpha)){
       const raw=e.alpha;
-      if(rawHeading===null){rawHeading=raw;return;}
-      delta=raw-rawHeading;rawHeading=raw;
-      if(delta>180)delta-=360;if(delta< -180)delta+=360;
-      // Heading unwrap: 359 -> 0 advances +1; 0 -> 359 retreats -1.
-    }else{
-      const a=e.alpha*DEG/2,b=e.beta*DEG/2,g=e.gamma*DEG/2;
-      const ca=Math.cos(a),sa=Math.sin(a),cb=Math.cos(b),sb=Math.sin(b),cg=Math.cos(g),sg=Math.sin(g);
-      qNow[0]=ca*sb*cg-sa*cb*sg;qNow[1]=ca*cb*sg+sa*sb*cg;
-      qNow[2]=ca*sb*sg+sa*cb*cg;qNow[3]=ca*cb*cg-sa*sb*sg;
-      if(prevQ===null){qPrevious.set(qNow);prevQ=true;return;}
-      let w=qPrevious[3]*qNow[3]+qPrevious[0]*qNow[0]+qPrevious[1]*qNow[1]+qPrevious[2]*qNow[2];
-      let z=qPrevious[3]*qNow[2]-qPrevious[2]*qNow[3]-qPrevious[0]*qNow[1]+qPrevious[1]*qNow[0];
-      // Measure each change in the previous device frame, then advance the baseline.
-      qPrevious.set(qNow);
-      if(w<0){w=-w;z=-z;}
-      if(Math.hypot(w,z)<1e-8)return;
-      delta=-2*Math.atan2(z,w)/DEG;
-      if(delta>180)delta-=360;if(delta< -180)delta+=360;
+      if(rawHeading!==null)delta=cycle(raw-rawHeading+180)-180;
+      rawHeading=raw;
+    }else if(sensorType==='roll'){
+      if(Number.isFinite(e.alpha)){
+        const a=e.alpha*DEG/2,b=e.beta*DEG/2,g=e.gamma*DEG/2;
+        const ca=Math.cos(a),sa=Math.sin(a),cb=Math.cos(b),sb=Math.sin(b),cg=Math.cos(g),sg=Math.sin(g);
+        qNow[0]=ca*sb*cg-sa*cb*sg;qNow[1]=ca*cb*sg+sa*sb*cg;
+        qNow[2]=ca*sb*sg+sa*cb*cg;qNow[3]=ca*cb*cg-sa*sb*sg;
+        if(prevQ!==null&&gravityDelta===null&&now-lastStrongRoll>100){
+          let w=qPrevious[3]*qNow[3]+qPrevious[0]*qNow[0]+qPrevious[1]*qNow[1]+qPrevious[2]*qNow[2];
+          let z=qPrevious[3]*qNow[2]-qPrevious[2]*qNow[3]-qPrevious[0]*qNow[1]+qPrevious[1]*qNow[0];
+          if(w<0){w=-w;z=-z;}
+          if(Math.hypot(w,z)>1e-8)delta=-2*Math.atan2(z,w)/DEG;
+        }
+        qPrevious.set(qNow);prevQ=true;
+      }else prevQ=null;
+      // In the upright range, the liquid and the text start from the same roll sample.
+      if(gravityDelta!==null)delta=gravityDelta;
     }
-    // Reject a sensor restart/outlier, not normal wraparound.
     if(!Number.isFinite(delta)||Math.abs(delta)>55)return;
-    // Unbounded accumulated sensor angle; wrap is handled in the delta above.
     accum+=delta*direction*sensitivity;
-    target=accum;
+    if(Math.abs(accum-target)>=.18)target=accum;
   }
   async function enableGyro() {
     if(sensor){detachSensor();say(UI.manualHelp);updateUI();return;}
@@ -633,7 +640,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
         const result=await DeviceOrientationEvent.requestPermission();
         if(result!=='granted'){say(UI.denied);updateUI();return;}
       }
-      hasDisplayRoll=false;resetRoll();
+      hasDisplayRoll=false;resetRoll();lastStrongRoll=-Infinity;
       sensor=true;sensorGotData=false;prevQ=null;rawHeading=null;
       accum=current;target=current;vel=0;
       window.addEventListener('deviceorientation',onOrientation,{passive:true});
