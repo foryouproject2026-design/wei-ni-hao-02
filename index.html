@@ -85,7 +85,8 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
   let sensor=false,sensorGotData=false,prevQ=null,accum=0,timeoutID=0;
   let direction=1,sensitivity=1,sensorType='roll',rawHeading=null;
   let clean=false,scrubbing=false,ready=false,clock=0,oldAngle=0,oldSpeed=0;
-  let displayRoll=0,hasDisplayRoll=false,gravityStrength=1;
+  let displayRoll=0,targetRoll=0,hasDisplayRoll=false,gravityStrength=1;
+  let resizePending=false;
   let previousRoll=null,rollSampleTime=0,sampledSpeed=0,waterSpeed=0;
   let opticalFlow=0,opticalDrift=0;
   const fillRatio=.52,readingHold=2.2;
@@ -108,7 +109,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     path.closePath();
     return path;
   }
-  function resize(){
+  function resize(redraw=true){
     W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,mobileRendering?1.6:2);
     cx=W/2;cy=H/2;
     halfW=Math.max(1,cx);halfH=Math.max(1,cy);
@@ -118,9 +119,11 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     // Use the longest sentence and the short side, not the rotating projection.
     letterSize=Math.min(reference*.67/Math.max([...DATA.source].length,[...DATA.target].length),71);
     geometry();
-    canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);
+    const pixelWidth=Math.round(W*DPR),pixelHeight=Math.round(H*DPR);
+    if(canvas.width!==pixelWidth)canvas.width=pixelWidth;
+    if(canvas.height!==pixelHeight)canvas.height=pixelHeight;
     canvas.style.width=W+'px';canvas.style.height=H+'px';
-    if(ready){lastOptics=-Infinity;paint(current);}
+    if(ready){lastOptics=-Infinity;if(redraw)paint(current);}
   }
   function makeGlyphs(){
     for(const text of [DATA.source,DATA.target]){
@@ -153,7 +156,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
 
     // Angular acceleration drives the liquid. Standing waves carry velocity
     // through a stop or reversal and lose energy at each trip across the tank.
-    const roll=measured?displayRoll:-angle*DEG;
+    const roll=measured?displayRoll-screenRoll():-angle*DEG;
     const wallDistance=Math.min(halfW/Math.max(.001,Math.abs(Math.cos(roll))),
       halfH/Math.max(.001,Math.abs(Math.sin(roll))));
     const restoring=clamp(Math.min(halfW,halfH)/Math.max(1,wallDistance),.48,1.05)
@@ -372,17 +375,20 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
       return swell*.037+small*.009
         +.004*Math.sin(TAU*(u*8.5+v*5.7)+time*1.8+small*.78);
     }
+    let currentRow=new Float32Array(width+1),nextRow=new Float32Array(width+1);
+    for(let x=0;x<=width;x++)currentRow[x]=heightAt(x*du,0);
     for(let y=0;y<height;y++){
       const v=y*dv,worldY=top+(y+.5)*dv*opticalDepth;
+      for(let x=0;x<=width;x++)nextRow[x]=heightAt(x*du,v+dv);
       for(let x=0;x<width;x++){
-        const u=x*du,h=heightAt(u,v);
+        const u=x*du,h=currentRow[x];
         const depth=Math.max(0,worldY-waterline[x]);
         const depthLoss=Math.exp(-depth/(radius*.58));
         const edgeSpread=5+radius*.017;
         const edgeWeight=Math.exp(-depth/edgeSpread);
         const edgeLight=.5+.5*Math.sin(TAU*(u*3.1+opticalFlow*.26)+tilt[x]*5.8+time*.7);
-        const nx=(h-heightAt(u+du,v))/du*steepness;
-        const ny=(h-heightAt(u,v+dv))/dv*steepness;
+        const nx=(h-currentRow[x+1])/du*steepness;
+        const ny=(h-nextRow[x])/dv*steepness;
         const nz=1/Math.sqrt(1+nx*nx+ny*ny);
         // Surface normals reflect a broad light source and a smaller bright source.
         const broad=Math.max(0,(nx*-.26+ny*.38+.888)*nz);
@@ -398,6 +404,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
         data[i]=data[i+1]=data[i+2]=242;
         data[i+3]=Math.round(255*light);
       }
+      [currentRow,nextRow]=[nextRow,currentRow];
     }
     waterPixels.putImageData(lightMap,0,0);
   }
@@ -456,7 +463,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
   }
   function paint(angle,dt=0){
     if(!ready)return;
-    const view=sensor&&hasDisplayRoll?displayRoll:-angle*DEG;
+    const view=sensor&&hasDisplayRoll?displayRoll-screenRoll():-angle*DEG;
     const vesselAngle=-view/DEG;
     const surface=makeSurface(vesselAngle),state=stageState(angle);
     const letters=floatingLetters(surface,state,dt);
@@ -523,6 +530,10 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     const omega=20,decay=Math.exp(-omega*dt),err=current-target,t=(vel+omega*err)*dt;
     current=target+(err+t)*decay;vel=(vel-omega*t)*decay;
     if(Math.abs(current-target)<.0005&&Math.abs(vel)<.005){current=target;vel=0;}
+    if(resizePending){resizePending=false;resize(false);}
+    if(sensor&&hasDisplayRoll){
+      displayRoll+=(targetRoll-displayRoll)*(1-Math.exp(-dt*32));
+    }
     if(ready&&dt>0){
       const steps=Math.ceil(dt*120);
       for(let i=1;i<=steps;i++)stepWater(dt/steps,mix(previousAngle,current,i/steps),now);
@@ -557,13 +568,15 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
   // Relative quaternion twist around the DEVICE Z axis tracks rotating the
   // phone like a dial, unlike alpha alone (which tracks the earth Z axis).
   const qNow=new Float64Array(4),qPrevious=new Float64Array(4);
+  function screenRoll(){
+    return (screen.orientation?.angle??window.orientation??0)*DEG;
+  }
   function onOrientation(e) {
     if(!sensor||!Number.isFinite(e.beta)||!Number.isFinite(e.gamma))return;
     const beta=e.beta*DEG,gamma=e.gamma*DEG;
-    const screenAngle=(screen.orientation?.angle??window.orientation??0)*DEG;
     const x=-Math.cos(beta)*Math.sin(gamma),y=-Math.sin(beta);
     gravityStrength=Math.hypot(x,y);
-    if(gravityStrength>.12){
+    if(gravityStrength>(previousRoll===null?.22:.13)){
       const nativeRoll=Math.atan2(x,-y),now=performance.now();
       const elapsed=(now-rollSampleTime)/1000;
       if(previousRoll!==null&&elapsed>0&&elapsed<.24){
@@ -572,9 +585,12 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
         sampledSpeed+=(clamp(rate,-11,11)-sampledSpeed)*(1-Math.exp(-elapsed*24));
       }else sampledSpeed=0;
       previousRoll=nativeRoll;rollSampleTime=now;
-      const gx=x*Math.cos(screenAngle)+y*Math.sin(screenAngle);
-      const gy=-x*Math.sin(screenAngle)+y*Math.cos(screenAngle);
-      displayRoll=Math.atan2(gx,-gy);hasDisplayRoll=true;
+      if(!hasDisplayRoll){
+        displayRoll=targetRoll=nativeRoll;hasDisplayRoll=true;
+      }else{
+        const wrapped=nativeRoll-targetRoll;
+        targetRoll+=Math.atan2(Math.sin(wrapped),Math.cos(wrapped));
+      }
     }else resetRoll();
     if(!sensorGotData){sensorGotData=true;clearTimeout(timeoutID);say(UI.sensorHelp);}
     if(!Number.isFinite(e.alpha))return;
@@ -657,8 +673,7 @@ input[type=range]::-moz-range-thumb{border:0;background:#eee}
     last=performance.now();prevQ=null;rawHeading=null;resetRoll();
     if(document.hidden){auto=false;target=current;vel=0;}
   });
-  let resizeTimer;
-  window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(resize,120);},{passive:true});
+  window.addEventListener('resize',()=>{resizePending=true;},{passive:true});
 
 
 
